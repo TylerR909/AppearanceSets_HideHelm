@@ -8,3 +8,9 @@ ignore:
     - .git
     - .idea
     - .vs
+
+tools-used:
+    - git
+    - github
+    - vscode
+    - IntelliJ IDEA
