@@ -6,6 +6,8 @@
         "**/.hg": true,
         "**/.DS_Store": true,
         "**/.vs":true,
-        "**/LICENSE":true
+        "**/LICENSE":true,
+        "**/.idea/":true,
+        "**/*.iml":true
     }
 }
