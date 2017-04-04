@@ -1,0 +1,10 @@
+package-as: Appearance Sets Helm Hider
+
+ignore:
+    - Screenshots
+    - AppearanceSets_HideHelm.iml
+    - README.md
+    - .vscode
+    - .git
+    - .idea
+    - .vs
