@@ -1,5 +1,8 @@
 ## Interface: 70200
 ## Title: Appearance Sets Helm Hider
 ## Version: 0.0.1-Alpha
+## SavedVariables: ASHHDB
 
+embeds.xml
+Locale.lua
 HelmHide.lua
