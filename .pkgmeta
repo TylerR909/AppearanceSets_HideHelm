@@ -1,4 +1,4 @@
-package-as: Appearance Sets Helm Hider
+package-as: AppearanceSets_HideHelm
 
 ignore:
     - Screenshots
