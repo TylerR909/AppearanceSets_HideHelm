@@ -70,19 +70,44 @@ function ASHH:CreateButtons()
     hh:SetChecked(true) -- TODO: Default
     hh:SetText("Hide Helm")
     hh.tooltip = "Hides the helm when you load a new set"
+    -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
             ASHH:HideHelm()
         else 
-            -- TODO: button was unchecked, try to reapply helm?
+            if ASHH.lastClicked then
+                ASHH.lastClicked:Click() -- Not working as intended
+            end
         end
     end)
+
+    if hh:GetChecked() then ASHH:HideHelm() end
 
     ASHH.buttons.helmhide = hh
 end
 
 function ASHH:HookScripts()
+    local btn_h = "WardrobeCollectionFrameScrollFrameButton"
+    local count = 1
+    local keepGoing = true
+    local hh = ASHH.buttons.helmhide
 
+    local btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
+
+    if not btn then keepGoing = false end
+
+    while keepGoing do
+        btn:HookScript("OnClick", function(self, button)
+            if hh:GetChecked() then
+                ASHH:HideHelm()
+            end
+            ASHH.lastClicked = self;
+        end)
+
+        count = count + 1
+        btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
+        if not btn then keepGoing = false end
+   end
 end
 
 function ASHH:OnInitialize()
