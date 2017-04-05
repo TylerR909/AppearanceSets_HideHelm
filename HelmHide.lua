@@ -1,6 +1,7 @@
 local AddOn_Name, ns = ...
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0")
+local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 
 local defaultOptions = {
@@ -60,8 +61,28 @@ function ASHH:HideHelm()
     WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
 end
 
-function ASHH:HookButtons()
+function ASHH:CreateButtons()
     -- Build button, etc
+    ASHH.buttons = ASHH.buttons or {}
+
+    local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    hh:SetPoint("TOPLEFT",10,-5)
+    hh:SetChecked(true) -- TODO: Default
+    hh:SetText("Hide Helm")
+    hh.tooltip = "Hides the helm when you load a new set"
+    hh:SetScript("OnClick", function(self,button,down) 
+        if self:GetChecked() then 
+            ASHH:HideHelm()
+        else 
+            -- TODO: button was unchecked, try to reapply helm?
+        end
+    end)
+
+    ASHH.buttons.helmhide = hh
+end
+
+function ASHH:HookScripts()
+
 end
 
 function ASHH:OnInitialize()
@@ -70,10 +91,13 @@ function ASHH:OnInitialize()
     -- self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name)
     self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
         if addon == "Blizzard_Collections" then
-            ASHH:HookButtons()
+            ASHH:CreateButtons()
             ASHH:UnregisterEvent("ADDON_LOADED")
+            ASHH:HookScripts()
         end
     end)
+
+    -- self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE",function (self, ...) print (...) end)
     -- Start looking for variants?
 end
 
