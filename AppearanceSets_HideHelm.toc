@@ -1,6 +1,6 @@
 ## Interface: 70200
 ## Title: Appearance Sets Helm Hider
-## Version: 0.0.1-Beta
+## Version: 0.0.2-Alpha
 ## SavedVariables: ASHHDB
 
 embeds.xml

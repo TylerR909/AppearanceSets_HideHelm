@@ -66,8 +66,8 @@ function ASHH:CreateButtons()
     ASHH.buttons = ASHH.buttons or {}
 
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hh:SetPoint("TOPLEFT",10,-5)
-    hh:SetChecked(true) -- TODO: Default
+    hh:SetPoint("TOPLEFT",5,0)
+    hh:SetChecked(false) -- TODO: Default
     hh:SetText("Hide Helm")
     hh.tooltip = "Hides the helm when you load a new set"
     -- TODO: Click works, but Arrow Keys to select fails to trigger
@@ -80,8 +80,6 @@ function ASHH:CreateButtons()
             end
         end
     end)
-
-    if hh:GetChecked() then ASHH:HideHelm() end
 
     ASHH.buttons.helmhide = hh
 end
