@@ -1,8 +1,10 @@
-local addon_name, ns = ...
-ASSH = LibStuc("AceAddon-3.0"):NewAddon(addon_name)
-local L = LibStub("AceLocale-3.0"):GetLocale("MyAddon",true)
+local AddOn_Name, ns = ...
+
+ASSH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name)
+local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
+
 local defaultOptions = {
-    name = addon_name,
+    name = AddOn_Name,
     handler = ASSH,
     type = "group",
     args = {
