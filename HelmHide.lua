@@ -111,19 +111,6 @@ local optionsTable = {
 -- frame: CollectionsJournal -> WardrobeCollectionFrame
 -- WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame
 
---[[
-local chk = CreateFrame("CheckButton","ASHH_Check",WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-chk:SetPoint("TOPLEFT",10,-5);
-chk:SetText("Hide Helm");
-chk.tooltip = "Hide helm from apperance sets viewer."
-chk:SetScript("OnClick",
-   function()
-      self:Hide();
-   end
-);
-
-chk:Show() --]]
-
 function ASHH:HideHelm() 
     WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
 end
@@ -226,6 +213,11 @@ function ASHH:buildButton_Back()
 end
 
 function ASHH:HookScripts()
+    ASHH:HookSetButtons()
+    ASHH:HookModel()
+end
+
+function ASHH:HookSetButtons()
     --Hook to Set Buttons
     local btn_h = "WardrobeCollectionFrameScrollFrameButton"
     local count = 1
@@ -249,6 +241,9 @@ function ASHH:HookScripts()
         if not btn then keepGoing = false end
     end
 
+end
+
+function ASHH:HookModel()
    -- Hook to Model Frame
     WardrobeCollectionFrame.SetsCollectionFrame.Model:HookScript("OnShow",function(self)
         local elap = 0
@@ -281,8 +276,8 @@ function ASHH:OnInitialize()
     self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
         if addon == "Blizzard_Collections" then
             ASHH:CreateButtons()
-            ASHH:UnregisterEvent("ADDON_LOADED")
             ASHH:HookScripts()
+            ASHH:UnregisterEvent("ADDON_LOADED")
         end
     end)
 
