@@ -221,24 +221,22 @@ function ASHH:HookSetButtons()
     --Hook to Set Buttons
     local btn_h = "WardrobeCollectionFrameScrollFrameButton"
     local count = 1
-    local keepGoing = true
     local hh = ASHH.buttons.hideHelm
+    local hs = ASHH.buttons.hideShoulders 
+    local hb = ASHH.buttons.hideBack 
 
     local btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
 
-    if not btn then keepGoing = false end
-
-    while keepGoing do
+    while btn do
         btn:HookScript("OnClick", function(self, button)
-            if hh:GetChecked() then
-                ASHH:HideHelm()
-            end
+            if hh:GetChecked() then ASHH:HideHelm() end
+            if hs:GetChecked() then ASHH:HideShoulders() end 
+            if hb:GetChecked() then ASHH:HideBack() end 
             ASHH.lastClicked = self;
         end)
 
         count = count + 1
         btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
-        if not btn then keepGoing = false end
     end
 
 end
