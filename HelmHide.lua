@@ -31,37 +31,76 @@ local optionsTable = {
             set = function(self, val) end,
             get = function(self) return end
         },
-        helmDefault = {
-            name = "Hide Helm Default",
-            desc = "Hide helm by default?",
-            type = 'toggle',
-            order = 0,
-            set = function(self, val) ASHH.db.char.hideHelm = self:GetChecked() end, -- do something?
-            get = function(self) return ASHH.db.char.hideHelm end -- return something here
+        global = {
+            name = "Global Settings",
+            desc = "",
+            type = "group",
+            args = {
+                helmDefault_G = {
+                    name = "Hide Helm",
+                    type = "toggle",
+                    order = 0,
+                    set = function(self,val) ASHH.db.global.hideHelm = self:GetChecked() end,
+                    get = function() return ASHH.db.global.hideHelm end
+                },
+                shoulderDefault_G = {
+                    name = "Hide Shoulders",
+                    type = "toggle",
+                    order = 1,
+                    set = function(self) ASHH.db.global.hideShoulders = self:GetChecked() end,
+                    get = function() return ASHH.db.global.hideShoulder end
+                },
+                backDefault_G = {
+                    name = "Hide Back",
+                    type = "toggle",
+                    order = 2,
+                    set = function(self) ASHH.db.global.hideBack = self:GetChecked() end,
+                    get = function() return ASHH.db.global.hideBack end
+                },
+                expandVariants_G = {
+                    name = "Expand Variants",
+                    type = "toggle",
+                    order = 3,
+                    set = function(self) ASHH.db.global.expandVariants= self:GetChecked() end,
+                    get = function() return ASHH.db.global.expandVariants end
+                }
+            }
         },
-        shoulderDefault = {
-            name = "Shoulder Hide Default",
-            desc = "Hide shoulder by default?",
-            type = 'toggle',
-            set = function(self, val) ASHH.db.char.hideShoulder = self:GetChecked() end,
-            get = function(self) return ASHH.db.char.hideShoulder end
-        },
-        backDefault = {
-            name = "Back Hide Default",
-            desc = "Hide back by default?",
-            type = 'toggle',
-            set = function(self, val) ASHH.db.char.hideBack = self:GetChecked() end,
-            get = function(self) return ASHH.db.char.hideBack end
-        },
-        expandVariants = {
-            name = "Expand Variants",
-            desc = "Expand variants from dropdown to buttons?",
-            type = 'toggle',
-            set = function(info, val) end, -- definitely do something 
-            get = function(info) end
+        character = {
+            name = "Character Settings"
+            desc = "",
+            type = "group",
+            args = {
+                helmDefault_C = {
+                    name = "Hide Helm",
+                    type = "toggle",
+                    order = 0,
+                    set = function(self,val) ASHH.db.char.hideHelm = self:GetChecked() end,
+                    get = function() return ASHH.db.char.hideHelm end
+                },
+                shoulderDefault_C = {
+                    name = "Hide Shoulders",
+                    type = "toggle",
+                    order = 1,
+                    set = function(self) ASHH.db.char.hideShoulders = self:GetChecked() end,
+                    get = function() return ASHH.db.char.hideShoulder end
+                },
+                backDefault_C = {
+                    name = "Hide Back",
+                    type = "toggle",
+                    order = 2,
+                    set = function(self) ASHH.db.char.hideBack = self:GetChecked() end,
+                    get = function() return ASHH.db.char.hideBack end
+                },
+                expandVariants_C = {
+                    name = "Expand Variants",
+                    type = "toggle",
+                    order = 3,
+                    set = function(self) ASHH.db.char.expandVariants= self:GetChecked() end,
+                    get = function() return ASHH.db.char.expandVariants end
+                }
+            }
         }
-            -- TODO: Differentiate between global setting and per-character setting. Some toons may actually like helms.
-            -- TODO: Add shoulders because people hate those too I guess -_-
             -- TODO: Way in the future, just add this as a setting to the dressing room to remove any helms tried on "anywhere"
     }
 }
