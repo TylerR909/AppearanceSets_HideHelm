@@ -134,7 +134,6 @@ function ASHH:buildButton_Helm()
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hh:SetPoint("TOPLEFT",5,0)
     hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
-    hh:SetText("Hide Helm")
     hh.tooltip = "Hides the helm when you load a new set"
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
@@ -146,6 +145,9 @@ function ASHH:buildButton_Helm()
             end
         end
     end)
+
+    hh:SetScript("OnEnter", function() ASHH.SetTooltip(hh) end)
+    hh:SetScript("OnLeave", function() ASHH.DropTooltip() end)
 --[[
     hh:SetScript("OnShow", function(self)
         -- When the collections frame is re-opened
@@ -161,7 +163,6 @@ function ASHH:buildButton_Shoulders()
     local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hs:SetPoint("TOPLEFT",ASHH.buttons.hh,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
-    hs:SetText("Hide Shoulder")
     hs.tooltip = "Hide shoulders when you load a new set"
 
     hs:SetScript("OnClick", function(self)
@@ -173,6 +174,10 @@ function ASHH:buildButton_Shoulders()
             end
         end
     end)
+
+    hs:SetScript("OnEnter", function() ASHH.SetTooltip(hs) end)
+    hs:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+
 --[[
     hs:SetScript("OnShow",function(self)
         if self:GetChecked() then 
@@ -199,6 +204,10 @@ function ASHH:buildButton_Back()
             end
         end
     end)
+
+    hb:SetScript("OnEnter", function() ASHH.SetTooltip(hb) end)
+    hb:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+
 --[[
     hb:SetScript("OnShow", function(self)
         -- When the collections frame is re-opened
@@ -289,4 +298,14 @@ end
 function ASHH:OnDisable()
     -- Disable checkbox
     -- Stop looking for variants
+end
+
+function ASHH.SetTooltip(btn)
+    GameTooltip:SetOwner(btn,"ANCHOR_RIGHT")
+    GameTooltip:SetText(btn.tooltip,nil,nil,nil,nil,true)
+    GameTooltip:Show()
+end 
+
+function ASHH.DropTooltip() 
+    GameTooltip:Hide()
 end
