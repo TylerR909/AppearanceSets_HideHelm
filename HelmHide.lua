@@ -9,12 +9,14 @@ local defaultOptions = {
     global = {
         hideHelm = true,
         hideShoulders = false,
-        hideBack = false
+        hideBack = false,
+        expandVariants = true
     },
     char = {
         hideHelm = true,
         hideShoulders = false,
-        hideBack = false
+        hideBack = false,
+        useCharSettings = false
     }
 }
 
@@ -39,7 +41,7 @@ local optionsTable = {
                     name = "Hide Helm",
                     type = "toggle",
                     order = 0,
-                    set = function(self,val) ASHH.db.global.hideHelm = self:GetChecked() end,
+                    set = function(self) ASHH.db.global.hideHelm = self:GetChecked() end,
                     get = function() return ASHH.db.global.hideHelm end
                 },
                 shoulderDefault_G = {
@@ -60,7 +62,7 @@ local optionsTable = {
                     name = "Expand Variants",
                     type = "toggle",
                     order = 3,
-                    set = function(self) ASHH.db.global.expandVariants= self:GetChecked() end,
+                    set = function(self) ASHH.db.global.expandVariants = self:GetChecked() end,
                     get = function() return ASHH.db.global.expandVariants end
                 }
             }
@@ -73,29 +75,43 @@ local optionsTable = {
                     name = "Hide Helm",
                     type = "toggle",
                     order = 0,
-                    set = function(self,val) ASHH.db.char.hideHelm = self:GetChecked() end,
+                    set = function(self) 
+                        ASHH.db.char.hideHelm = self:GetChecked()
+                        ASHH.db.char.useCharSettings = true
+                    end,
                     get = function() return ASHH.db.char.hideHelm end
                 },
                 shoulderDefault_C = {
                     name = "Hide Shoulders",
                     type = "toggle",
                     order = 1,
-                    set = function(self) ASHH.db.char.hideShoulders = self:GetChecked() end,
+                    set = function(self) 
+                        ASHH.db.char.hideShoulders = self:GetChecked() 
+                        ASHH.db.char.useCharSettings = true
+                    end,
                     get = function() return ASHH.db.char.hideShoulder end
                 },
                 backDefault_C = {
                     name = "Hide Back",
                     type = "toggle",
                     order = 2,
-                    set = function(self) ASHH.db.char.hideBack = self:GetChecked() end,
+                    set = function(self) 
+                            ASHH.db.char.hideBack = self:GetChecked() 
+                            ASHH.db.char.useCharSettings = true
+                        end,
                     get = function() return ASHH.db.char.hideBack end
                 },
-                expandVariants_C = {
-                    name = "Expand Variants",
-                    type = "toggle",
+                resetToDefault {
+                    name = "Use Default",
+                    type = "execute",
+                    hidden = not ASHH.db.char.useCharSettings
                     order = 3,
-                    set = function(self) ASHH.db.char.expandVariants= self:GetChecked() end,
-                    get = function() return ASHH.db.char.expandVariants end
+                    func = function()
+                        ASHH.db.char.hideHelm = ASHH.db.global.hideHelm
+                        ASHH.db.char.hideshoulders = ASHH.db.global.hideShoulders 
+                        ASHH.db.char.hideBack = ASHH.db.global.hideBack
+                        ASHH.db.char.useCharSettings = false
+                    end
                 }
             }
         }
@@ -270,12 +286,12 @@ function ASHH:HookModel()
                 end
             end
         end)
-        --register ASHH.buttons.hideHelm for onUpdate
     end)
 end
 
 function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
+    ASHH:SetupOptions()
     -- LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,defaultOptions) -- options is wrong?
     -- self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name)
     self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
@@ -298,6 +314,15 @@ end
 function ASHH:OnDisable()
     -- Disable checkbox
     -- Stop looking for variants
+end
+
+function ASHH:SetupOptions()
+    -- if usecharsettings false, then use global settings
+    if self.db.char.useCharSettings ~= true then 
+        self.db.char.hideHelm = self.db.global.hideHelm
+        self.db.char.hideShoulders = self.db.global.hideShoulders
+        self.db.char.hideBack = self.db.global.hideBack
+    end
 end
 
 function ASHH.SetTooltip(btn)
