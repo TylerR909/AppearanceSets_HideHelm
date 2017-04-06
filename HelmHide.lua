@@ -161,7 +161,7 @@ end
 
 function ASHH:buildButton_Shoulders()
     local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hs:SetPoint("TOPLEFT",5,-30) -- TODO: Set relative to hh
+    hs:SetPoint("TOPLEFT",ASHH.buttons.hh,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
     hs:SetText("Hide Shoulder")
     hs.tooltip = "Hide shoulders when you load a new set"
@@ -187,7 +187,7 @@ end
 
 function ASHH:buildButton_Back() 
     local hb = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hb:SetPoint("TOPLEFT",5,-60) -- TODO: Set relative to HS
+    hb:SetPoint("TOPLEFT",ASHH.buttons.hs,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
     hb:SetText("Hide Back")
     hb.tooltip = "Hides the back/cape when you load a new set"
