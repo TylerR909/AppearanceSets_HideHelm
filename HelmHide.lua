@@ -33,7 +33,6 @@ local optionsTable = {
         },
         global = {
             name = "Global Settings",
-            desc = "",
             type = "group",
             args = {
                 helmDefault_G = {
@@ -68,7 +67,6 @@ local optionsTable = {
         },
         character = {
             name = "Character Settings"
-            desc = "",
             type = "group",
             args = {
                 helmDefault_C = {
