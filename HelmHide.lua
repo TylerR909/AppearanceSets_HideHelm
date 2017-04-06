@@ -61,6 +61,8 @@ local optionsTable = {
                 expandVariants_G = {
                     name = "Expand Variants",
                     type = "toggle",
+                    desc = "Coming soon!",
+                    disabled = true,
                     order = 3,
                     set = function(self) ASHH.db.global.expandVariants = self:GetChecked() end,
                     get = function() return ASHH.db.global.expandVariants end
@@ -106,12 +108,7 @@ local optionsTable = {
                     type = "execute",
                     hidden = not ASHH.db.char.useCharSettings
                     order = 3,
-                    func = function()
-                        ASHH.db.char.hideHelm = ASHH.db.global.hideHelm
-                        ASHH.db.char.hideshoulders = ASHH.db.global.hideShoulders 
-                        ASHH.db.char.hideBack = ASHH.db.global.hideBack
-                        ASHH.db.char.useCharSettings = false
-                    end
+                    func = "ResetCharOptions" -- Hope this works!
                 }
             }
         }
@@ -292,18 +289,28 @@ end
 function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
     ASHH:SetupOptions()
-    -- LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,defaultOptions) -- options is wrong?
-    -- self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name)
-    self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
-        if addon == "Blizzard_Collections" then
-            ASHH:CreateButtons()
-            ASHH:HookScripts()
-            ASHH:UnregisterEvent("ADDON_LOADED")
-        end
-    end)
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,"ashh")
+    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name,nil)
+
+    if not IsAddonLoaded("Blizzard_Collections") then 
+        self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
+            if addon == "Blizzard_Collections" then
+                ASHH:CollectionsInit()
+                ASHH:UnregisterEvent("ADDON_LOADED")
+            end
+        end)
+    else 
+        ASHH:CollectionsInit()
+    end
+
 
     -- self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE",function (self, ...) print (...) end)
     -- Start looking for variants?
+end
+
+function ASHH:CollectionsInit()
+    ASHH:CreateButtons()
+    ASHH:HookScripts()
 end
 
 function ASHH:OnEnable()
@@ -323,6 +330,18 @@ function ASHH:SetupOptions()
         self.db.char.hideShoulders = self.db.global.hideShoulders
         self.db.char.hideBack = self.db.global.hideBack
     end
+end
+
+function ASHH:ResetOptions() 
+    self.db:ResetDB(defaultOptions)
+end
+
+function ASHH:ResetCharOptions()
+    -- self may be wrong. Could switch to ASHH.*
+    self.db.char.hideHelm = self.db.global.hideHelm 
+    self.db.char.hideShoulders = self.db.global.hideShoulders
+    self.db.char.hideBack = self.db.global.hideBack
+    self.db.char.useCharSettings = false
 end
 
 function ASHH.SetTooltip(btn)
