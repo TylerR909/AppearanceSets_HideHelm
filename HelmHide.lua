@@ -161,14 +161,14 @@ function ASHH:buildButton_Helm()
             end
         end
     end)
-
+--[[
     hh:SetScript("OnShow", function(self)
         -- When the collections frame is re-opened
         if self:GetChecked() then -- Redundant with model:OnShow()
             ASHH:HideHelm()
         end
     end)
-
+--]]
     return hh
 end
 
@@ -188,13 +188,13 @@ function ASHH:buildButton_Shoulders()
             end
         end
     end)
-
+--[[
     hs:SetScript("OnShow",function(self)
         if self:GetChecked() then 
             ASHH:HideShoulders()
         end
     end)
-
+--]]
     return hs 
 end
 
@@ -214,14 +214,14 @@ function ASHH:buildButton_Back()
             end
         end
     end)
-
+--[[
     hb:SetScript("OnShow", function(self)
         -- When the collections frame is re-opened
         if self:GetChecked() then -- Redundant with model:OnShow()
             ASHH:HideBack()
         end
     end)
-
+--]]
     return hb
 end
 
@@ -258,6 +258,14 @@ function ASHH:HookScripts()
             if elap > elap_buffer then
                 if ASHH.buttons.hideHelm:GetChecked() then
                     ASHH:HideHelm()
+                    self:SetScript("OnUpdate",nil)
+                end
+                if ASHH.buttons.hideShoulders:GetChecked() then 
+                    ASHH:HideShoulders()
+                    self:SetScript("OnUpdate",nil)
+                end 
+                if ASHH.buttons.hideBack:GetChecked() then 
+                    ASHH:HideBack() 
                     self:SetScript("OnUpdate",nil)
                 end
             end
