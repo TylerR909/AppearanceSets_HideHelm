@@ -140,6 +140,10 @@ function ASHH:CreateButtons()
     -- Build button, etc
     ASHH.buttons = ASHH.buttons or {}
 
+    ASHH.buttons.hideHelm = ASHH:buildButton_Helm()
+    ASHH.buttons.hideShoulder = ASHH:buildButton_Shoulders()
+    ASHH.buttons.hideBack = ASHH:buildButton_Back()
+
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hh:SetPoint("TOPLEFT",5,0)
     hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
@@ -165,6 +169,86 @@ function ASHH:CreateButtons()
 
 
     ASHH.buttons.hideHelm = hh
+end
+
+function ASHH:buildButton_Helm() 
+    local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    hh:SetPoint("TOPLEFT",5,0)
+    hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
+    hh:SetText("Hide Helm")
+    hh.tooltip = "Hides the helm when you load a new set"
+    -- TODO: Click works, but Arrow Keys to select fails to trigger
+    hh:SetScript("OnClick", function(self,button,down) 
+        if self:GetChecked() then 
+            ASHH:HideHelm()
+        else 
+            if ASHH.lastClicked then
+                ASHH.lastClicked:Click() -- Not working as intended
+            end
+        end
+    end)
+
+    hh:SetScript("OnShow", function(self)
+        -- When the collections frame is re-opened
+        if self:GetChecked() then -- Redundant with model:OnShow()
+            ASHH:HideHelm()
+        end
+    end)
+
+    return hh
+end
+
+function ASHH:buildButton_Shoulders()
+    local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    hs:SetPoint("TOPLEFT",5,-30) -- TODO: Set relative to hh
+    hs:SetChecked(self.db.char.hideShoulders)
+    hs:SetText("Hide Shoulder")
+    hs.tooltip = "Hide shoulders when you load a new set"
+
+    hs:SetScript("OnClick", function(self)
+        if self:GetChecked() then
+            ASHH:HideShoulders()
+        else
+            if ASHH.lastClicked then 
+                ASHH.lastclicked:Click() 
+            end
+        end
+    end)
+
+    hs:SetScript("OnShow",function(self)
+        if self:GetChecked() then 
+            ASHH:HideShoulders()
+        end
+    end)
+
+    return hs 
+end
+
+function ASHH:buildButton_Back() 
+    local hb = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    hb:SetPoint("TOPLEFT",5,-60) -- TODO: Set relative to HS
+    hb:SetChecked(self.db.char.hideBack)
+    hb:SetText("Hide Back")
+    hb.tooltip = "Hides the back/cape when you load a new set"
+    -- TODO: Click works, but Arrow Keys to select fails to trigger
+    hb:SetScript("OnClick", function(self,button,down) 
+        if self:GetChecked() then 
+            ASHH:HideBack()
+        else 
+            if ASHH.lastClicked then
+                ASHH.lastClicked:Click() -- Not working as intended
+            end
+        end
+    end)
+
+    hb:SetScript("OnShow", function(self)
+        -- When the collections frame is re-opened
+        if self:GetChecked() then -- Redundant with model:OnShow()
+            ASHH:HideBack()
+        end
+    end)
+
+    return hb
 end
 
 function ASHH:HookScripts()
