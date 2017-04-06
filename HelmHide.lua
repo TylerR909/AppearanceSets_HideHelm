@@ -118,7 +118,8 @@ function ASHH:CreateButtons()
     end)
 
     hh:SetScript("OnShow", function(self)
-        if self:GetChecked() then
+        -- When the collections frame is re-opened
+        if self:GetChecked() then -- Redundant with model:OnShow()
             ASHH:HideHelm()
         end
     end)
