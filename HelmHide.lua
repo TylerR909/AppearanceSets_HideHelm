@@ -41,21 +41,21 @@ local optionsTable = {
                     name = "Hide Helm",
                     type = "toggle",
                     order = 0,
-                    set = function(self) ASHH.db.global.hideHelm = self:GetChecked() end,
+                    set = function(_, val) ASHH.db.global.hideHelm = val end,
                     get = function() return ASHH.db.global.hideHelm end
                 },
                 shoulderDefault_G = {
                     name = "Hide Shoulders",
                     type = "toggle",
                     order = 1,
-                    set = function(self) ASHH.db.global.hideShoulders = self:GetChecked() end,
+                    set = function(_,val) ASHH.db.global.hideShoulders = val end,
                     get = function() return ASHH.db.global.hideShoulder end
                 },
                 backDefault_G = {
                     name = "Hide Back",
                     type = "toggle",
                     order = 2,
-                    set = function(self) ASHH.db.global.hideBack = self:GetChecked() end,
+                    set = function(_,val) ASHH.db.global.hideBack = val end,
                     get = function() return ASHH.db.global.hideBack end
                 },
                 expandVariants_G = {
@@ -64,21 +64,21 @@ local optionsTable = {
                     desc = "Coming soon!",
                     disabled = true,
                     order = 3,
-                    set = function(self) ASHH.db.global.expandVariants = self:GetChecked() end,
+                    set = function(_,val) ASHH.db.global.expandVariants = val end,
                     get = function() return ASHH.db.global.expandVariants end
                 }
             }
         },
         character = {
-            name = "Character Settings"
+            name = "Character Settings",
             type = "group",
             args = {
                 helmDefault_C = {
                     name = "Hide Helm",
                     type = "toggle",
                     order = 0,
-                    set = function(self) 
-                        ASHH.db.char.hideHelm = self:GetChecked()
+                    set = function(_,val) 
+                        ASHH.db.char.hideHelm = val
                         ASHH.db.char.useCharSettings = true
                     end,
                     get = function() return ASHH.db.char.hideHelm end
@@ -87,26 +87,26 @@ local optionsTable = {
                     name = "Hide Shoulders",
                     type = "toggle",
                     order = 1,
-                    set = function(self) 
-                        ASHH.db.char.hideShoulders = self:GetChecked() 
+                    set = function(_,val) 
+                        ASHH.db.char.hideShoulders = val
                         ASHH.db.char.useCharSettings = true
                     end,
-                    get = function() return ASHH.db.char.hideShoulder end
+                    get = function() return ASHH.db.char.hideShoulders end
                 },
                 backDefault_C = {
                     name = "Hide Back",
                     type = "toggle",
                     order = 2,
-                    set = function(self) 
-                            ASHH.db.char.hideBack = self:GetChecked() 
+                    set = function(_,val) 
+                            ASHH.db.char.hideBack = val
                             ASHH.db.char.useCharSettings = true
                         end,
                     get = function() return ASHH.db.char.hideBack end
                 },
-                resetToDefault {
+                resetToDefault = {
                     name = "Use Default",
                     type = "execute",
-                    hidden = not ASHH.db.char.useCharSettings
+                    hidden = function() return not ASHH.db.char.useCharSettings end,
                     order = 3,
                     func = "ResetCharOptions" -- Hope this works!
                 }
@@ -139,7 +139,7 @@ function ASHH:CreateButtons()
     ASHH.buttons = ASHH.buttons or {}
 
     ASHH.buttons.hideHelm = ASHH:buildButton_Helm()
-    ASHH.buttons.hideShoulder = ASHH:buildButton_Shoulders()
+    ASHH.buttons.hideShoulders = ASHH:buildButton_Shoulders()
     ASHH.buttons.hideBack = ASHH:buildButton_Back()
 end
 
@@ -174,7 +174,7 @@ end
 
 function ASHH:buildButton_Shoulders()
     local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hs:SetPoint("TOPLEFT",ASHH.buttons.hh,"TOPRIGHT",5,0)
+    hs:SetPoint("TOPLEFT",ASHH.buttons.hideHelm,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
     hs.tooltip = "Hide shoulders when you load a new set"
 
@@ -183,7 +183,7 @@ function ASHH:buildButton_Shoulders()
             ASHH:HideShoulders()
         else
             if ASHH.lastClicked then 
-                ASHH.lastclicked:Click() 
+                ASHH.lastClicked:Click() 
             end
         end
     end)
@@ -203,7 +203,7 @@ end
 
 function ASHH:buildButton_Back() 
     local hb = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hb:SetPoint("TOPLEFT",ASHH.buttons.hs,"TOPRIGHT",5,0)
+    hb:SetPoint("TOPLEFT",ASHH.buttons.hideShoulders,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
     hb:SetText("Hide Back")
     hb.tooltip = "Hides the back/cape when you load a new set"
@@ -292,7 +292,7 @@ function ASHH:OnInitialize()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,"ashh")
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name,nil)
 
-    if not IsAddonLoaded("Blizzard_Collections") then 
+    if not IsAddOnLoaded("Blizzard_Collections") then 
         self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
             if addon == "Blizzard_Collections" then
                 ASHH:CollectionsInit()
