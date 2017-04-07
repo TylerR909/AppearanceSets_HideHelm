@@ -29,88 +29,88 @@ local optionsTable = {
             name = "Enable",
             desc = "Enables/Disables the addon",
             type = 'toggle',
+            order = 0,
             hidden = true,
             set = function(self, val) end,
             get = function(self) return end
         },
-        global = {
+        globalHeader = {
             name = "Global Settings",
-            type = "group",
-            args = {
-                helmDefault_G = {
-                    name = "Hide Helm",
-                    type = "toggle",
-                    order = 0,
-                    set = function(_, val) ASHH.db.global.hideHelm = val end,
-                    get = function() return ASHH.db.global.hideHelm end
-                },
-                shoulderDefault_G = {
-                    name = "Hide Shoulders",
-                    type = "toggle",
-                    order = 1,
-                    set = function(_,val) ASHH.db.global.hideShoulders = val end,
-                    get = function() return ASHH.db.global.hideShoulder end
-                },
-                backDefault_G = {
-                    name = "Hide Back",
-                    type = "toggle",
-                    order = 2,
-                    set = function(_,val) ASHH.db.global.hideBack = val end,
-                    get = function() return ASHH.db.global.hideBack end
-                },
-                expandVariants_G = {
-                    name = "Expand Variants",
-                    type = "toggle",
-                    desc = "Coming soon!",
-                    disabled = true,
-                    order = 3,
-                    set = function(_,val) ASHH.db.global.expandVariants = val end,
-                    get = function() return ASHH.db.global.expandVariants end
-                }
-            }
+            type = "header",
+            order = 2
         },
-        character = {
+        helmDefault_G = {
+            name = "Hide Helm",
+            type = "toggle",
+            order = 3,
+            set = function(_, val) ASHH.db.global.hideHelm = val end,
+            get = function() return ASHH.db.global.hideHelm end
+        },
+        shoulderDefault_G = {
+            name = "Hide Shoulders",
+            type = "toggle",
+            order = 4,
+            set = function(_,val) ASHH.db.global.hideShoulders = val end,
+            get = function() return ASHH.db.global.hideShoulders end
+        },
+        backDefault_G = {
+            name = "Hide Back",
+            type = "toggle",
+            order = 5,
+            set = function(_,val) ASHH.db.global.hideBack = val end,
+            get = function() return ASHH.db.global.hideBack end
+        },
+        expandVariants_G = {
+            name = "Expand Variants",
+            type = "toggle",
+            order = 6,
+            desc = "Coming soon!",
+            descStyle = "inline",
+            disabled = true,
+            set = function(_,val) ASHH.db.global.expandVariants = val end,
+            get = function() return ASHH.db.global.expandVariants end
+        },
+        charHeader = {
             name = "Character Settings",
-            type = "group",
-            args = {
-                helmDefault_C = {
-                    name = "Hide Helm",
-                    type = "toggle",
-                    order = 0,
-                    set = function(_,val) 
-                        ASHH.db.char.hideHelm = val
-                        ASHH.db.char.useCharSettings = true
-                    end,
-                    get = function() return ASHH.db.char.hideHelm end
-                },
-                shoulderDefault_C = {
-                    name = "Hide Shoulders",
-                    type = "toggle",
-                    order = 1,
-                    set = function(_,val) 
-                        ASHH.db.char.hideShoulders = val
-                        ASHH.db.char.useCharSettings = true
-                    end,
-                    get = function() return ASHH.db.char.hideShoulders end
-                },
-                backDefault_C = {
-                    name = "Hide Back",
-                    type = "toggle",
-                    order = 2,
-                    set = function(_,val) 
-                            ASHH.db.char.hideBack = val
-                            ASHH.db.char.useCharSettings = true
-                        end,
-                    get = function() return ASHH.db.char.hideBack end
-                },
-                resetToDefault = {
-                    name = "Use Default",
-                    type = "execute",
-                    hidden = function() return not ASHH.db.char.useCharSettings end,
-                    order = 3,
-                    func = "ResetCharOptions" -- Hope this works!
-                }
-            }
+            type = "header",
+            order = 7,
+        },
+        helmDefault_C = {
+            name = "Hide Helm",
+            type = "toggle",
+            order = 8,
+            set = function(_,val) 
+                ASHH.db.char.hideHelm = val
+                ASHH.db.char.useCharSettings = true
+            end,
+            get = function() return ASHH.db.char.hideHelm end
+        },
+        shoulderDefault_C = {
+            name = "Hide Shoulders",
+            type = "toggle",
+            order = 9,
+            set = function(_,val) 
+                ASHH.db.char.hideShoulders = val
+                ASHH.db.char.useCharSettings = true
+            end,
+            get = function() return ASHH.db.char.hideShoulders end
+        },
+        backDefault_C = {
+            name = "Hide Back",
+            type = "toggle",
+            order = 10,
+            set = function(_,val) 
+                    ASHH.db.char.hideBack = val
+                    ASHH.db.char.useCharSettings = true
+                end,
+            get = function() return ASHH.db.char.hideBack end
+        },
+        resetToDefault = {
+            name = "Use Default",
+            type = "execute",
+            order = 11,
+            hidden = function() return not ASHH.db.char.useCharSettings end,
+            func = "ResetCharOptions" -- Hope this works!
         }
             -- TODO: Way in the future, just add this as a setting to the dressing room to remove any helms tried on "anywhere"
     }
