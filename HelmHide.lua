@@ -35,7 +35,7 @@ local optionsTable = {
             get = function(self) return end
         },
         globalHeader = {
-            name = "Global Settings",
+            name = "Global Defaults",
             type = "header",
             order = 2
         },
@@ -71,7 +71,7 @@ local optionsTable = {
             get = function() return ASHH.db.global.expandVariants end
         },
         charHeader = {
-            name = "Character Settings",
+            name = "Character Defaults",
             type = "header",
             order = 7,
         },
@@ -106,10 +106,10 @@ local optionsTable = {
             get = function() return ASHH.db.char.hideBack end
         },
         resetToDefault = {
-            name = "Use Default",
+            name = "Use Global",
             type = "execute",
             order = 11,
-            hidden = function() return not ASHH.db.char.useCharSettings end,
+            disabled = function() return not ASHH.db.char.useCharSettings end,
             func = "ResetCharOptions" -- Hope this works!
         }
             -- TODO: Way in the future, just add this as a setting to the dressing room to remove any helms tried on "anywhere"
