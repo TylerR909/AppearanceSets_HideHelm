@@ -1,7 +1,7 @@
 local AddOn_Name, ns = ...
 local elap_buffer = 0.05
 
-ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0")
+ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 
@@ -289,7 +289,7 @@ end
 function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
     ASHH:SetupOptions()
-    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,"ashh")
+    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,nil)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name,nil)
 
     if not IsAddOnLoaded("Blizzard_Collections") then 
@@ -302,6 +302,11 @@ function ASHH:OnInitialize()
     else 
         ASHH:CollectionsInit()
     end
+
+    ASHH:RegisterChatCommand("ashh",function()
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
+        InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
+    end)
 
 
     -- self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE",function (self, ...) print (...) end)
