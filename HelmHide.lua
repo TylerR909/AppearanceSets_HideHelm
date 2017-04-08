@@ -214,7 +214,7 @@ function ASHH:buildButton_Helm()
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hh:SetPoint("TOPLEFT",5,0)
     hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
-    hh.tooltip = "Hides the helm when you load a new set"
+    hh.tooltip = "Hide Helm"
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -236,7 +236,7 @@ function ASHH:buildButton_Shoulders()
     local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hs:SetPoint("TOPLEFT",ASHH.buttons.hideHelm,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
-    hs.tooltip = "Hide shoulders when you load a new set"
+    hs.tooltip = "Hide Shoulders"
 
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
@@ -259,7 +259,7 @@ function ASHH:buildButton_Back()
     hb:SetPoint("TOPLEFT",ASHH.buttons.hideShoulders,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
     hb:SetText("Hide Back")
-    hb.tooltip = "Hides the back/cape when you load a new set"
+    hb.tooltip = "Hide Back"
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hb:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -282,7 +282,7 @@ function ASHH:buildButton_Belt()
     hw:SetPoint("TOPLEFT",ASHH.buttons.hideBack,"TOPRIGHT",5,0)
     hw:SetChecked(self.db.char.hideBelt)
     hw:SetText("Hide Belt")
-    hw.tooltip = "Hides the belt when you load a new set"
+    hw.tooltip = "Hide Belt"
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
             ASHH:HideBelt()
