@@ -44,16 +44,16 @@ local optionsTable = {
         },
         reloadDialogue = {
             type = "description",
-            name = "Changes will take effect on next reload",
+            name = L["ReloadMsg"],
             order = 1
         },
         globalHeader = {
-            name = "Global Defaults",
+            name = L["Global Defaults"],
             type = "header",
             order = 2
         },
         helmDefault_G = {
-            name = "Hide Helm",
+            name = L["Hide Helm"],
             type = "toggle",
             order = 3,
             set = function(_, val) 
@@ -66,7 +66,7 @@ local optionsTable = {
             get = function() return ASHH.db.global.hideHelm end
         },
         shoulderDefault_G = {
-            name = "Hide Shoulders",
+            name = L["Hide Shoulders"],
             type = "toggle",
             order = 4,
             set = function(_,val) 
@@ -79,7 +79,7 @@ local optionsTable = {
             get = function() return ASHH.db.global.hideShoulders end
         },
         backDefault_G = {
-            name = "Hide Back",
+            name = L["Hide Back"],
             type = "toggle",
             order = 5,
             set = function(_,val) 
@@ -92,7 +92,7 @@ local optionsTable = {
             get = function() return ASHH.db.global.hideBack end
         },
         beltDefault_G = {
-            name = "Hide Belt",
+            name = L["Hide Belt"],
             type = "toggle",
             order = 5,
             set = function(_,val) 
@@ -105,22 +105,22 @@ local optionsTable = {
             get = function() return ASHH.db.global.hideBelt end
         },
         expandVariants_G = {
-            name = "Expand Variants",
+            name = L["Expand Variants"],
             type = "toggle",
             order = 6,
-            desc = "Coming soon!",
+            desc = L["Coming soon!"],
             descStyle = "inline",
             disabled = true,
             set = function(_,val) ASHH.db.global.expandVariants = val end,
             get = function() return ASHH.db.global.expandVariants end
         },
         charHeader = {
-            name = "Character Defaults",
+            name = L["Character Defaults"],
             type = "header",
             order = 7,
         },
         helmDefault_C = {
-            name = "Hide Helm",
+            name = L["Hide Helm"],
             type = "toggle",
             order = 8,
             set = function(_,val) 
@@ -130,7 +130,7 @@ local optionsTable = {
             get = function() return ASHH.db.char.hideHelm end
         },
         shoulderDefault_C = {
-            name = "Hide Shoulders",
+            name = L["Hide Shoulders"],
             type = "toggle",
             order = 9,
             set = function(_,val) 
@@ -140,7 +140,7 @@ local optionsTable = {
             get = function() return ASHH.db.char.hideShoulders end
         },
         backDefault_C = {
-            name = "Hide Back",
+            name = L["Hide Back"],
             type = "toggle",
             order = 10,
             set = function(_,val) 
@@ -150,7 +150,7 @@ local optionsTable = {
             get = function() return ASHH.db.char.hideBack end
         },
         beltDefault_C = {
-            name = "Hide Belt",
+            name = L["Hide Belt"],
             type = "toggle",
             order = 10,
             set = function(_,val)
@@ -160,7 +160,7 @@ local optionsTable = {
             get = function() return ASHH.db.char.hideBelt end
         },
         resetToDefault = {
-            name = "Use Global",
+            name = L["Use Global"],
             type = "execute",
             order = 11,
             disabled = function() return not ASHH.db.char.useCharSettings end,
@@ -214,7 +214,7 @@ function ASHH:buildButton_Helm()
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hh:SetPoint("TOPLEFT",5,0)
     hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
-    hh.tooltip = "Hide Helm"
+    hh.tooltip = L["Hide Helm"]
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -236,7 +236,7 @@ function ASHH:buildButton_Shoulders()
     local hs = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hs:SetPoint("TOPLEFT",ASHH.buttons.hideHelm,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
-    hs.tooltip = "Hide Shoulders"
+    hs.tooltip = L["Hide Shoulders"]
 
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
@@ -258,8 +258,7 @@ function ASHH:buildButton_Back()
     local hb = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hb:SetPoint("TOPLEFT",ASHH.buttons.hideShoulders,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
-    hb:SetText("Hide Back")
-    hb.tooltip = "Hide Back"
+    hb.tooltip = L["Hide Back"]
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hb:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -281,8 +280,7 @@ function ASHH:buildButton_Belt()
     local hw = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hw:SetPoint("TOPLEFT",ASHH.buttons.hideBack,"TOPRIGHT",5,0)
     hw:SetChecked(self.db.char.hideBelt)
-    hw:SetText("Hide Belt")
-    hw.tooltip = "Hide Belt"
+    hw.tooltip = L["Hide Belt"]
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
             ASHH:HideBelt()

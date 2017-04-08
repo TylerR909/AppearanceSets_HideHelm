@@ -3,6 +3,8 @@
 ## Version: 1.0.4
 ## SavedVariables: ASHHDB
 
+
 embeds.xml
-Locale.lua
+Locale\Locales.xml
+
 HelmHide.lua
