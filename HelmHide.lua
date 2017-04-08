@@ -1,10 +1,11 @@
 local AddOn_Name, ns = ...
-local elap_buffer = 0.05
+local OnUpdate_Buffer = 0.05
 
 -- TODO: Change icons on buttons (Convert to AceGUI first?)
 -- TODO: Pull variant table option into its own row?
 -- TODO: Localization
--- TODO: Clicking a variant ignores checkbox. Maybe hook into the variant box's OnClick so it generates dropdowns, then hook into Dropdown's onclick to run the checkbox-checks?
+-- TODO: Clean up . : notation
+-- TODO: Clean up ASHH v self
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
@@ -191,6 +192,13 @@ function ASHH:HideBelt()
     WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(6)
 end
 
+function ASHH:EvalButtons()
+    if ASHH.buttons.hideHelm:GetChecked() then ASHH:HideHelm() end
+    if ASHH.buttons.hideShoulders:GetChecked() then ASHH:HideShoulders() end
+    if ASHH.buttons.hideBack:GetChecked() then ASHH:HideBack() end
+    if ASHH.buttons.hideBelt:GetChecked() then ASHH:HideBelt() end
+end
+
 
 function ASHH:CreateButtons()
     -- Build button, etc
@@ -294,25 +302,18 @@ end
 function ASHH:HookScripts()
     ASHH:HookSetButtons()
     ASHH:HookModel()
+    ASHH:HookVariants()
 end
 
 function ASHH:HookSetButtons()
     --Hook to Set Buttons
     local btn_h = "WardrobeCollectionFrameScrollFrameButton"
     local count = 1
-    local hh = ASHH.buttons.hideHelm
-    local hs = ASHH.buttons.hideShoulders 
-    local hb = ASHH.buttons.hideBack 
-    local hw = ASHH.buttons.hideBelt
-
     local btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
 
     while btn do
         btn:HookScript("OnClick", function(self, button)
-            if hh:GetChecked() then ASHH:HideHelm() end
-            if hs:GetChecked() then ASHH:HideShoulders() end 
-            if hb:GetChecked() then ASHH:HideBack() end 
-            if hw:GetChecked() then ASHH:HideBelt() end
+            ASHH:EvalButtons()
             ASHH.lastClicked = self;
         end)
 
@@ -323,31 +324,34 @@ function ASHH:HookSetButtons()
 end
 
 function ASHH:HookModel()
-   -- Hook to Model Frame
+    -- Hook to Model Frame
+    -- When model is shown (Window open, tab opened, etc) evaluate buttons (after a buffer period) 
     WardrobeCollectionFrame.SetsCollectionFrame.Model:HookScript("OnShow",function(self)
         local elap = 0
 
         ASHH.buttons.hideHelm:SetScript("OnUpdate",function (self, elapsed)
             elap = elap + elapsed
-            if elap > elap_buffer then
-                if ASHH.buttons.hideHelm:GetChecked() then
-                    ASHH:HideHelm()
-                    self:SetScript("OnUpdate",nil)
-                end
-                if ASHH.buttons.hideShoulders:GetChecked() then 
-                    ASHH:HideShoulders()
-                    self:SetScript("OnUpdate",nil)
-                end 
-                if ASHH.buttons.hideBack:GetChecked() then 
-                    ASHH:HideBack() 
-                    self:SetScript("OnUpdate",nil)
-                end
-                if ASHH.buttons.hideBelt:GetChecked() then
-                    ASHH:HideBelt()
-                    self:SetScript("OnUpdate",nil)
-                end
+            if elap > OnUpdate_Buffer then
+                ASHH:EvalButtons()
+                self:SetScript("OnUpdate",nil)
             end
         end)
+    end)
+
+end
+
+function ASHH:HookVariants() 
+    -- WardrobeCollectionFrame.SetsCollectionFrame.Model:HookScript("OnUpdateModel")
+    if not ASHH.buffers then ASHH.buffers = {} end
+    ASHH.buffers.Model = 0
+
+    -- Future: If I hide the Variant button to generate my own, this will break
+    WardrobeSetsCollectionVariantSetsButton:HookScript("OnUpdate",function(dropdown,elapsed)
+        ASHH.buffers.Model = ASHH.buffers.Model + elapsed
+        if (ASHH.buffers.Model > OnUpdate_Buffer) then
+            ASHH:EvalButtons()
+            ASHH.buffers.Model = 0
+        end
     end)
 end
 
@@ -372,10 +376,6 @@ function ASHH:OnInitialize()
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
     end)
-
-
-    -- self:RegisterEvent("TRANSMOG_COLLECTION_ITEM_UPDATE",function (self, ...) print (...) end)
-    -- Start looking for variants?
 end
 
 function ASHH:CollectionsInit()
