@@ -50,28 +50,52 @@ local optionsTable = {
             name = "Hide Helm",
             type = "toggle",
             order = 3,
-            set = function(_, val) ASHH.db.global.hideHelm = val end,
+            set = function(_, val) 
+                    ASHH.db.global.hideHelm = val 
+
+                    if not ASHH.db.char.useCharSettings then
+                        ASHH.db.char.hideHelm = val
+                    end
+                end,
             get = function() return ASHH.db.global.hideHelm end
         },
         shoulderDefault_G = {
             name = "Hide Shoulders",
             type = "toggle",
             order = 4,
-            set = function(_,val) ASHH.db.global.hideShoulders = val end,
+            set = function(_,val) 
+                    ASHH.db.global.hideShoulders = val 
+                    
+                    if not ASHH.db.char.useCharSettings then
+                        ASHH.db.char.hideShoulders = val
+                    end
+                end,
             get = function() return ASHH.db.global.hideShoulders end
         },
         backDefault_G = {
             name = "Hide Back",
             type = "toggle",
             order = 5,
-            set = function(_,val) ASHH.db.global.hideBack = val end,
+            set = function(_,val) 
+                    ASHH.db.global.hideBack = val 
+
+                    if not ASHH.db.char.useCharSettings then
+                        ASHH.db.char.hideBack = val
+                    end
+                end,
             get = function() return ASHH.db.global.hideBack end
         },
-        beltDefault_G {
+        beltDefault_G = {
             name = "Hide Belt",
             type = "toggle",
             order = 5,
-            set = function(_,val) ASHH.db.global.hideBelt = val end,
+            set = function(_,val) 
+                    ASHH.db.global.hideBelt = val 
+
+                    if not ASHH.db.char.useCharSettings then
+                        ASHH.db.char.hideBelt = val
+                    end
+                end,
             get = function() return ASHH.db.global.hideBelt end
         },
         expandVariants_G = {
@@ -94,32 +118,20 @@ local optionsTable = {
             type = "toggle",
             order = 8,
             set = function(_,val) 
-                ASHH.db.char.hideHelm = val
-                ASHH.db.char.useCharSettings = true
-            end,
-            get = function() 
-                    if ASHH.db.char.useCharSettings then 
-                        return ASHH.db.char.hideHelm 
-                    else
-                        return ASHH.db.global.hideHelm
-                    end
-            end
+                    ASHH.db.char.hideHelm = val
+                    ASHH.db.char.useCharSettings = true
+                end,
+            get = function() return ASHH.db.char.hideHelm end
         },
         shoulderDefault_C = {
             name = "Hide Shoulders",
             type = "toggle",
             order = 9,
             set = function(_,val) 
-                ASHH.db.char.hideShoulders = val
-                ASHH.db.char.useCharSettings = true
-            end,
-            get = function() 
-                    if ASHH.db.char.useCharSettings then
-                        return ASHH.db.char.hideShoulders end
-                    else
-                        return ASHH.db.global.hideShoulders
-                    end
-                end
+                    ASHH.db.char.hideShoulders = val
+                    ASHH.db.char.useCharSettings = true
+                end,
+            get = function() return ASHH.db.char.hideShoulders end
         },
         backDefault_C = {
             name = "Hide Back",
@@ -129,13 +141,7 @@ local optionsTable = {
                     ASHH.db.char.hideBack = val
                     ASHH.db.char.useCharSettings = true
                 end,
-            get = function() 
-                    if ASHH.db.char.useCharSettings then
-                        return ASHH.db.char.hideBack 
-                    else
-                        return ASHH.db.global.hideBack
-                    end
-                end
+            get = function() return ASHH.db.char.hideBack end
         },
         beltDefault_C = {
             name = "Hide Belt",
@@ -143,15 +149,9 @@ local optionsTable = {
             order = 10,
             set = function(_,val)
                     ASHH.db.char.hideBelt = val
-                    ASHH.db.char.userCharSettings = true
+                    ASHH.db.char.useCharSettings = true
                 end,
-            get = function() 
-                    if ASHH.db.char.useCharSettings then
-                        return ASHH.db.char.hideBelt
-                    else
-                        return ASHH.db.global.hideBelt
-                    end
-                end
+            get = function() return ASHH.db.char.hideBelt end
         },
         resetToDefault = {
             name = "Use Global",
@@ -272,7 +272,7 @@ function ASHH:buildButton_Belt()
     hw.tooltip = "Hides the belt when you load a new set"
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
-            ASHH:HideBack()
+            ASHH:HideBelt()
         else
             if ASHH.lastClicked then
                 ASHH.lastClicked:Click()
@@ -280,7 +280,7 @@ function ASHH:buildButton_Belt()
         end
     end)
 
-    hw:SetScript("OnEnter", function() ASHH.setTooltip(hw) end)
+    hw:SetScript("OnEnter", function() ASHH.SetTooltip(hw) end)
     hw:SetScript("OnLeave", function() ASHH.DropTooltip() end)
 
     return hw
