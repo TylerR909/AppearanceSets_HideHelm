@@ -4,6 +4,7 @@ local elap_buffer = 0.05
 -- TODO: Change icons on buttons (Convert to AceGUI first?)
 -- TODO: Pull variant table option into its own row?
 -- TODO: Localization
+-- TODO: Clicking a variant ignores checkbox. Maybe hook into the variant box's OnClick so it generates dropdowns, then hook into Dropdown's onclick to run the checkbox-checks?
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
