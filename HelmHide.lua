@@ -1,10 +1,9 @@
 local AddOn_Name, ns = ...
 local elap_buffer = 0.05
 
--- TODO: Add belt support
 -- TODO: Change icons on buttons (Convert to AceGUI first?)
--- TODO: Fix options table quirks (Look into AceOptions OnUpdate thing?)
 -- TODO: Pull variant table option into its own row?
+-- TODO: Localization
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
@@ -40,6 +39,11 @@ local optionsTable = {
             hidden = true,
             set = function(self, val) end,
             get = function(self) return end
+        },
+        reloadDialogue = {
+            type = "description",
+            name = "Changes will take effect on next reload",
+            order = 1
         },
         globalHeader = {
             name = "Global Defaults",
