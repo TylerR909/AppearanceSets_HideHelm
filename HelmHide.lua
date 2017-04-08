@@ -1,6 +1,11 @@
 local AddOn_Name, ns = ...
 local elap_buffer = 0.05
 
+-- TODO: Add belt support
+-- TODO: Change icons on buttons (Convert to AceGUI first?)
+-- TODO: Fix options table quirks (Look into AceOptions OnUpdate thing?)
+-- TODO: Pull variant table option into its own row?
+
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
@@ -10,12 +15,14 @@ local defaultOptions = {
         hideHelm = true,
         hideShoulders = false,
         hideBack = false,
+        hideBelt = false,
         expandVariants = true
     },
     char = {
         hideHelm = true,
         hideShoulders = false,
         hideBack = false,
+        hideBelt = false,
         useCharSettings = false
     }
 }
@@ -60,6 +67,13 @@ local optionsTable = {
             set = function(_,val) ASHH.db.global.hideBack = val end,
             get = function() return ASHH.db.global.hideBack end
         },
+        beltDefault_G {
+            name = "Hide Belt",
+            type = "toggle",
+            order = 5,
+            set = function(_,val) ASHH.db.global.hideBelt = val end,
+            get = function() return ASHH.db.global.hideBelt end
+        },
         expandVariants_G = {
             name = "Expand Variants",
             type = "toggle",
@@ -83,7 +97,13 @@ local optionsTable = {
                 ASHH.db.char.hideHelm = val
                 ASHH.db.char.useCharSettings = true
             end,
-            get = function() return ASHH.db.char.hideHelm end
+            get = function() 
+                    if ASHH.db.char.useCharSettings then 
+                        return ASHH.db.char.hideHelm 
+                    else
+                        return ASHH.db.global.hideHelm
+                    end
+            end
         },
         shoulderDefault_C = {
             name = "Hide Shoulders",
@@ -93,7 +113,13 @@ local optionsTable = {
                 ASHH.db.char.hideShoulders = val
                 ASHH.db.char.useCharSettings = true
             end,
-            get = function() return ASHH.db.char.hideShoulders end
+            get = function() 
+                    if ASHH.db.char.useCharSettings then
+                        return ASHH.db.char.hideShoulders end
+                    else
+                        return ASHH.db.global.hideShoulders
+                    end
+                end
         },
         backDefault_C = {
             name = "Hide Back",
@@ -103,7 +129,29 @@ local optionsTable = {
                     ASHH.db.char.hideBack = val
                     ASHH.db.char.useCharSettings = true
                 end,
-            get = function() return ASHH.db.char.hideBack end
+            get = function() 
+                    if ASHH.db.char.useCharSettings then
+                        return ASHH.db.char.hideBack 
+                    else
+                        return ASHH.db.global.hideBack
+                    end
+                end
+        },
+        beltDefault_C = {
+            name = "Hide Belt",
+            type = "toggle",
+            order = 10,
+            set = function(_,val)
+                    ASHH.db.char.hideBelt = val
+                    ASHH.db.char.userCharSettings = true
+                end,
+            get = function() 
+                    if ASHH.db.char.useCharSettings then
+                        return ASHH.db.char.hideBelt
+                    else
+                        return ASHH.db.global.hideBelt
+                    end
+                end
         },
         resetToDefault = {
             name = "Use Global",
@@ -134,6 +182,11 @@ function ASHH:HideBack()
     WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(15)
 end
 
+function ASHH:HideBelt()
+    WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(6)
+end
+
+
 function ASHH:CreateButtons()
     -- Build button, etc
     ASHH.buttons = ASHH.buttons or {}
@@ -141,6 +194,7 @@ function ASHH:CreateButtons()
     ASHH.buttons.hideHelm = ASHH:buildButton_Helm()
     ASHH.buttons.hideShoulders = ASHH:buildButton_Shoulders()
     ASHH.buttons.hideBack = ASHH:buildButton_Back()
+    ASHH.buttons.hideBelt = ASHH:buildButton_Belt()
 end
 
 function ASHH:buildButton_Helm() 
@@ -161,14 +215,7 @@ function ASHH:buildButton_Helm()
 
     hh:SetScript("OnEnter", function() ASHH.SetTooltip(hh) end)
     hh:SetScript("OnLeave", function() ASHH.DropTooltip() end)
---[[
-    hh:SetScript("OnShow", function(self)
-        -- When the collections frame is re-opened
-        if self:GetChecked() then -- Redundant with model:OnShow()
-            ASHH:HideHelm()
-        end
-    end)
---]]
+
     return hh
 end
 
@@ -191,13 +238,6 @@ function ASHH:buildButton_Shoulders()
     hs:SetScript("OnEnter", function() ASHH.SetTooltip(hs) end)
     hs:SetScript("OnLeave", function() ASHH.DropTooltip() end)
 
---[[
-    hs:SetScript("OnShow",function(self)
-        if self:GetChecked() then 
-            ASHH:HideShoulders()
-        end
-    end)
---]]
     return hs 
 end
 
@@ -221,15 +261,29 @@ function ASHH:buildButton_Back()
     hb:SetScript("OnEnter", function() ASHH.SetTooltip(hb) end)
     hb:SetScript("OnLeave", function() ASHH.DropTooltip() end)
 
---[[
-    hb:SetScript("OnShow", function(self)
-        -- When the collections frame is re-opened
-        if self:GetChecked() then -- Redundant with model:OnShow()
+    return hb
+end
+
+function ASHH:buildButton_Belt()
+    local hw = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    hw:SetPoint("TOPLEFT",ASHH.buttons.hideBack,"TOPRIGHT",5,0)
+    hw:SetChecked(self.db.char.hideBelt)
+    hw:SetText("Hide Belt")
+    hw.tooltip = "Hides the belt when you load a new set"
+    hw:SetScript("OnClick", function(self,button,down)
+        if self:GetChecked() then
             ASHH:HideBack()
+        else
+            if ASHH.lastClicked then
+                ASHH.lastClicked:Click()
+            end
         end
     end)
---]]
-    return hb
+
+    hw:SetScript("OnEnter", function() ASHH.setTooltip(hw) end)
+    hw:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+
+    return hw
 end
 
 function ASHH:HookScripts()
@@ -244,6 +298,7 @@ function ASHH:HookSetButtons()
     local hh = ASHH.buttons.hideHelm
     local hs = ASHH.buttons.hideShoulders 
     local hb = ASHH.buttons.hideBack 
+    local hw = ASHH.buttons.hideBelt
 
     local btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
 
@@ -252,6 +307,7 @@ function ASHH:HookSetButtons()
             if hh:GetChecked() then ASHH:HideHelm() end
             if hs:GetChecked() then ASHH:HideShoulders() end 
             if hb:GetChecked() then ASHH:HideBack() end 
+            if hw:GetChecked() then ASHH:HideBelt() end
             ASHH.lastClicked = self;
         end)
 
@@ -279,6 +335,10 @@ function ASHH:HookModel()
                 end 
                 if ASHH.buttons.hideBack:GetChecked() then 
                     ASHH:HideBack() 
+                    self:SetScript("OnUpdate",nil)
+                end
+                if ASHH.buttons.hideBelt:GetChecked() then
+                    ASHH:HideBelt()
                     self:SetScript("OnUpdate",nil)
                 end
             end
@@ -334,6 +394,7 @@ function ASHH:SetupOptions()
         self.db.char.hideHelm = self.db.global.hideHelm
         self.db.char.hideShoulders = self.db.global.hideShoulders
         self.db.char.hideBack = self.db.global.hideBack
+        self.db.char.hideBelt = self.db.global.hideBelt
     end
 end
 
@@ -346,6 +407,7 @@ function ASHH:ResetCharOptions()
     self.db.char.hideHelm = self.db.global.hideHelm 
     self.db.char.hideShoulders = self.db.global.hideShoulders
     self.db.char.hideBack = self.db.global.hideBack
+    self.db.char.hideBelt = self.db.global.hideBelt
     self.db.char.useCharSettings = false
 end
 
