@@ -6,6 +6,7 @@ local OnUpdate_Buffer = 0.05
 -- TODO: Localization
 -- TODO: Clean up . : notation
 -- TODO: Clean up ASHH v self
+-- TODO: Icons per armor class(cloth, leather, mail, plate)
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
@@ -212,9 +213,11 @@ end
 
 function ASHH:buildButton_Helm() 
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
-    hh:SetPoint("TOPLEFT",5,0)
+    hh:SetPoint("TOPLEFT",7,-5)
     hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
     hh.tooltip = L["Hide Helm"]
+    ASHH:SetTexture(hh,"Interface\\Icons\\inv_helmet_03")
+    -- hh:SetNormalTexture("Interface\\Icons\\inv_helmet_03")
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -237,6 +240,7 @@ function ASHH:buildButton_Shoulders()
     hs:SetPoint("TOPLEFT",ASHH.buttons.hideHelm,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
     hs.tooltip = L["Hide Shoulders"]
+    ASHH:SetTexture(hs,"Interface\\Icons\\inv_misc_desecrated_clothshoulder")
 
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
@@ -259,6 +263,7 @@ function ASHH:buildButton_Back()
     hb:SetPoint("TOPLEFT",ASHH.buttons.hideShoulders,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
     hb.tooltip = L["Hide Back"]
+    ASHH:SetTexture(hb,"Interface\\Icons\\inv_misc_cape_20")
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hb:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
@@ -281,6 +286,7 @@ function ASHH:buildButton_Belt()
     hw:SetPoint("TOPLEFT",ASHH.buttons.hideBack,"TOPRIGHT",5,0)
     hw:SetChecked(self.db.char.hideBelt)
     hw.tooltip = L["Hide Belt"]
+    ASHH:SetTexture(hw,"Interface\\Icons\\inv_belt_03")
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
             ASHH:HideBelt()
@@ -295,6 +301,27 @@ function ASHH:buildButton_Belt()
     hw:SetScript("OnLeave", function() ASHH.DropTooltip() end)
 
     return hw
+end
+
+function ASHH:SetTexture(button,path)
+    button:SetHeight(28)
+    button:SetWidth(28)
+
+    local texture = button:GetCheckedTexture()
+    texture:SetTexture(path)
+    texture:SetVertexColor(0.2,0.2,0.2,1)
+
+    texture = button:GetNormalTexture()
+    texture:SetTexture(path)
+    texture:SetVertexColor(1,1,1,1)
+
+    texture = button:GetHighlightTexture()
+    texture:SetTexture(path)
+    texture:SetVertexColor(1,1,1,0.5)
+
+    texture = button:GetPushedTexture()
+    texture:SetTexture(path)
+    texture:SetVertexColor(1,1,1,0.5)
 end
 
 function ASHH:HookScripts()
