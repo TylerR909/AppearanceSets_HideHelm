@@ -1,9 +1,7 @@
 local AddOn_Name, ns = ...
 local OnUpdate_Buffer = 0.05
 
--- TODO: Change icons on buttons (Convert to AceGUI first?)
 -- TODO: Pull variant table option into its own row?
--- TODO: Localization
 -- TODO: Clean up . : notation
 -- TODO: Clean up ASHH v self
 -- TODO: Icons per armor class(cloth, leather, mail, plate)
@@ -214,7 +212,7 @@ end
 function ASHH:buildButton_Helm() 
     local hh = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
     hh:SetPoint("TOPLEFT",7,-5)
-    hh:SetChecked(self.db.char.hideHelm) -- TODO: Default
+    hh:SetChecked(self.db.char.hideHelm)
     hh.tooltip = L["Hide Helm"]
     ASHH:SetTexture(hh,"Interface\\Icons\\inv_helmet_03")
     -- hh:SetNormalTexture("Interface\\Icons\\inv_helmet_03")
