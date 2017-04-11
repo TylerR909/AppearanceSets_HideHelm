@@ -6,6 +6,7 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- TODO: Clean up . : notation
 -- TODO: Clean up ASHH v self
 -- TODO: Icons per armor class(cloth, leather, mail, plate)
+-- TODO: Clean up by putting options in its own file
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
@@ -170,13 +171,7 @@ local optionsTable = {
     }
 }
 
-
--- event: TRANSMOG_COLLECTION_UPDATED
--- event: TRANSMOG_SEARCH_UPDATED
--- frame: CollectionsJournal -> WardrobeCollectionFrame
--- WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame
-
-function ASHH:HideHelm() 
+function ASHH:HideHelm()
     WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
 end
 
@@ -199,7 +194,6 @@ function ASHH:EvalButtons()
     if ASHH.buttons.hideBelt:GetChecked() then ASHH:HideBelt() end
 end
 
-
 function ASHH:CreateButtons()
     -- Build button, etc
     ASHH.buttons = ASHH.buttons or {}
@@ -221,10 +215,6 @@ function ASHH:buildButton_Helm()
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
             ASHH:HideHelm()
-        else 
-            if ASHH.lastClicked then
-                ASHH.lastClicked:Click() -- Not working as intended
-            end
         end
     end)
 
@@ -244,10 +234,6 @@ function ASHH:buildButton_Shoulders()
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
             ASHH:HideShoulders()
-        else
-            if ASHH.lastClicked then 
-                ASHH.lastClicked:Click() 
-            end
         end
     end)
 
@@ -267,10 +253,6 @@ function ASHH:buildButton_Back()
     hb:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
             ASHH:HideBack()
-        else 
-            if ASHH.lastClicked then
-                ASHH.lastClicked:Click() -- Not working as intended
-            end
         end
     end)
 
@@ -289,10 +271,6 @@ function ASHH:buildButton_Belt()
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
             ASHH:HideBelt()
-        else
-            if ASHH.lastClicked then
-                ASHH.lastClicked:Click()
-            end
         end
     end)
 
