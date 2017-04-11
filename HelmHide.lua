@@ -338,9 +338,12 @@ function ASHH:HookSetButtons()
     while btn do
         btn:HookScript("OnClick", function(self, button)
             ASHH:EvalButtons()
-            ASHH.lastClicked = self;
+            ASHH.lastClicked = self
+            print("Clicky!")
         end)
-
+        -- Arrow keys are not handled by OnKeyUp, OnKeyDown, PostClick, PreClick
+        --      OnAttributeChanged, OnMouseDown, OnMouseUp, or OnMouseWheel
+        
         count = count + 1
         btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
     end
