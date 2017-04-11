@@ -1,5 +1,6 @@
 local AddOn_Name, ns = ...
 local OnUpdate_Buffer = 0.05
+local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 
 -- TODO: Pull variant table option into its own row?
 -- TODO: Clean up . : notation
@@ -28,7 +29,7 @@ local defaultOptions = {
 }
 
 local optionsTable = {
-    name = AddOn_Name,
+    name = friendlyName,
     handler = ASHH,
     type = 'group',
     args = {
@@ -382,7 +383,7 @@ function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
     ASHH:SetupOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,nil)
-    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,AddOn_Name,nil)
+    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,friendlyName,nil)
 
     if not IsAddOnLoaded("Blizzard_Collections") then 
         self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
