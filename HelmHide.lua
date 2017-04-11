@@ -339,7 +339,6 @@ function ASHH:HookSetButtons()
         btn:HookScript("OnClick", function(self, button)
             ASHH:EvalButtons()
             ASHH.lastClicked = self
-            print("Clicky!")
         end)
         -- Arrow keys are not handled by OnKeyUp, OnKeyDown, PostClick, PreClick
         --      OnAttributeChanged, OnMouseDown, OnMouseUp, or OnMouseWheel
