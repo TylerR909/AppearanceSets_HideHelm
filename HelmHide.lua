@@ -8,9 +8,10 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- TODO: Icons per armor class(cloth, leather, mail, plate)
 -- TODO: Clean up by putting options in its own file
 
-ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
+local ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
+local model
 
 local defaultOptions = {
     global = {
@@ -21,10 +22,6 @@ local defaultOptions = {
         expandVariants = true
     },
     char = {
-        hideHelm = true,
-        hideShoulders = false,
-        hideBack = false,
-        hideBelt = false,
         useCharSettings = false
     }
 }
@@ -172,19 +169,23 @@ local optionsTable = {
 }
 
 function ASHH:HideHelm()
-    WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
+    model:UndressSlot(1)
+    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
 end
 
 function ASHH:HideShoulders()
-    WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(3)
+    model:UndressSlot(3)
+    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(3)
 end
 
 function ASHH:HideBack()
-    WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(15)
+    model:UndressSlot(15)
+    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(15)
 end
 
 function ASHH:HideBelt()
-    WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(6)
+    model:UndressSlot(6)
+    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(6)
 end
 
 function ASHH:EvalButtons()
@@ -210,11 +211,12 @@ function ASHH:buildButton_Helm()
     hh:SetChecked(self.db.char.hideHelm)
     hh.tooltip = L["Hide Helm"]
     ASHH:SetTexture(hh,"Interface\\Icons\\inv_helmet_03")
-    -- hh:SetNormalTexture("Interface\\Icons\\inv_helmet_03")
     -- TODO: Click works, but Arrow Keys to select fails to trigger
     hh:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
             ASHH:HideHelm()
+        else
+            ASHH:ReEquip(1)
         end
     end)
 
@@ -234,6 +236,8 @@ function ASHH:buildButton_Shoulders()
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
             ASHH:HideShoulders()
+        else
+            ASHH:ReEquip(3)
         end
     end)
 
@@ -249,10 +253,12 @@ function ASHH:buildButton_Back()
     hb:SetChecked(self.db.char.hideBack)
     hb.tooltip = L["Hide Back"]
     ASHH:SetTexture(hb,"Interface\\Icons\\inv_misc_cape_20")
-    -- TODO: Click works, but Arrow Keys to select fails to trigger
+
     hb:SetScript("OnClick", function(self,button,down) 
         if self:GetChecked() then 
             ASHH:HideBack()
+        else
+            ASHH:ReEquip(15)
         end
     end)
 
@@ -271,6 +277,8 @@ function ASHH:buildButton_Belt()
     hw:SetScript("OnClick", function(self,button,down)
         if self:GetChecked() then
             ASHH:HideBelt()
+        else
+            ASHH:ReEquip(6)
         end
     end)
 
@@ -301,6 +309,36 @@ function ASHH:SetTexture(button,path)
     texture:SetVertexColor(1,1,1,0.5)
 end
 
+function ASHH:ReEquip(slotID)
+    local lastClicked = ASHH.lastClickedSet
+    local variant
+    if WardrobeSetsCollectionVariantSetsButton:IsShown() then
+        variant = UIDropDownMenu_GetText(WardrobeSetsCollectionVariantSetsButton)
+    end
+-- import sets and get setID from last-clicked set
+    local sets = ASHH.db.sets
+    local setID = sets[lastClicked].setID
+-- swap setID to variant if necessary
+    -- if sets[lastClicked].variants == nil, skip
+    -- otherwise if sets[lastClicked].variants[variant] == nil, use baseSetID
+    -- otherwise use sets[lastClicked].variants[variant].setID
+-- pull itemIDs from the set
+    local itemID = C_TransmogSets.GetSourcesForSlot(setID,slotID)
+    if itemID then
+        itemID = itemID[1].itemID -- Error Case: A set without a cape got to this part and indexed null.
+                                -- other sets w/ missing pieces might make it this far. How to handle "Slot not in set?"
+    else
+        itemID = setID -- This may not make sense; an entire setID can't become a one-item link
+    end
+
+    -- I need to get more info for the right variant
+    local itemLink = select(2,GetItemInfo(itemID))
+
+    if itemID then model:TryOn(itemLink) end
+
+    -- print(slotID,lastClicked,variant,setID,itemID)
+end
+
 function ASHH:HookScripts()
     ASHH:HookSetButtons()
     ASHH:HookModel()
@@ -311,18 +349,18 @@ function ASHH:HookSetButtons()
     --Hook to Set Buttons
     local btn_h = "WardrobeCollectionFrameScrollFrameButton"
     local count = 1
-    local btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
+    local btn = _G[btn_h..count]
 
     while btn do
         btn:HookScript("OnClick", function(self, button)
             ASHH:EvalButtons()
-            ASHH.lastClicked = self
+            ASHH.lastClickedSet = self.Name:GetText()
         end)
-        -- Arrow keys are not handled by OnKeyUp, OnKeyDown, PostClick, PreClick
+        -- Arrow keys are NOT handled by OnKeyUp, OnKeyDown, PostClick, PreClick
         --      OnAttributeChanged, OnMouseDown, OnMouseUp, or OnMouseWheel
         
         count = count + 1
-        btn = _G["WardrobeCollectionFrameScrollFrameButton"..count]
+        btn = _G[btn_h..count]
     end
 
 end
@@ -383,18 +421,47 @@ function ASHH:OnInitialize()
 end
 
 function ASHH:CollectionsInit()
+    model = WardrobeCollectionFrame.SetsCollectionFrame.Model
     ASHH:CreateButtons()
     ASHH:HookScripts()
+    ASHH:BuildSetsDB()
+end
+
+function ASHH:BuildSetsDB()
+    sets = {}
+
+    local baseSets = C_TransmogSets.GetBaseSets()
+
+    for i=1,#baseSets do
+        set = baseSets[i]
+        -- if sets[set.name] ~= nil then continue end
+        sets[set.name] = {
+            name = set.name,
+            setID = set.setID,
+            variants = ASHH:FindVariants(set.setID)
+        }
+    end    
+
+    ASHH.db.sets = sets
+    -- ASHH.lastClickedSet = WardrobeCollectionFrameScrollFrameButton1.Name:GetText() -- Text isn't loaded until window shows? How to do a one-time script? Ace hook?
+end
+
+function ASHH:FindVariants(setID)
+    vtable = C_TransmogSets.GetVariantSets(setID)
+    if not vtable then return nil end
+    
+    variants = {}
+    for i=1,#vtable do
+        variants[vtable[i].description] = vtable[i].setID
+    end
+
+    return variants
 end
 
 function ASHH:OnEnable()
-    -- Attach checkbox
-    -- Start looking to convert variants
 end
 
 function ASHH:OnDisable()
-    -- Disable checkbox
-    -- Stop looking for variants
 end
 
 function ASHH:SetupOptions()
