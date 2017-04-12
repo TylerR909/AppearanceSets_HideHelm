@@ -9,5 +9,8 @@
         "**/LICENSE":true,
         "**/.idea/":true,
         "**/*.iml":true
-    }
+    },
+    "editor.minimap.enabled": true,
+    "editor.minimap.renderCharacters": false,
+    "editor.minimap.maxColumn": 100
 }
