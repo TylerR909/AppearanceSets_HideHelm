@@ -102,7 +102,7 @@ local setID = 1310
 -- printNames(sets,set)
 -- print(tContains(classSets,set))
 tprint(C_TransmogSets.GetSourceIDsForSlot(setID,1))
-print("---done---")
+print("---done---"
 
 
 
