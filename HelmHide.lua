@@ -7,6 +7,8 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- TODO: Clean up ASHH v self
 -- TODO: Icons per armor class(cloth, leather, mail, plate)
 -- TODO: Clean up by putting options in its own file
+-- TODO: Run this /run print(WardrobeSetsCollectionMixin:GetSelectedSetID()) -- huge implications 
+-- Keepsake: https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_Collections/Blizzard_Wardrobe.lua
 
 local ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
@@ -315,38 +317,54 @@ function ASHH:ReEquip(slotID)
     if WardrobeSetsCollectionVariantSetsButton:IsShown() then
         variant = UIDropDownMenu_GetText(WardrobeSetsCollectionVariantSetsButton)
     end
--- import sets and get setID from last-clicked set
+
+-- identify setID
     local sets = ASHH.db.sets
-    local setID = sets[lastClicked].setID
--- swap setID to variant if necessary
-    -- if sets[lastClicked].variants == nil, skip
-    -- otherwise if sets[lastClicked].variants[variant] == nil, use baseSetID
-    -- otherwise use sets[lastClicked].variants[variant].setID
--- pull itemIDs from the set
+    local setID
+
+    if sets[lastClicked].variants == nil or sets[lastClicked].variants[variant] == nil then 
+        setID = sets[lastClicked].variants[variant].setID
+    else
+        setID = sets[lastClicked].setID
+    end
+
+-- pull ItemID from setID
     local itemID = C_TransmogSets.GetSourcesForSlot(setID,slotID)
-    if itemID then
+    --[[
+        test:
+            set setID with valid slotID
+                - multiple sources
+                - one source
+                - no sources (Bad slotID?)
+            setID with invalid slotID
+                - Match no-sources?
+    ]]
+    if #itemID > 0 then -- let's see if this fixes the below error
         itemID = itemID[1].itemID -- Error Case: A set without a cape got to this part and indexed null.
                                 -- other sets w/ missing pieces might make it this far. How to handle "Slot not in set?"
     else
         itemID = setID -- This may not make sense; an entire setID can't become a one-item link
-    end
+    end -- look in to self:GetParent():GetParent():GetSelectedSetID()... wth is GetSelectedSetID()? 
 
-    -- I need to get more info for the right variant
+-- I need to get more info for the right variant
     local itemLink = select(2,GetItemInfo(itemID))
 
+-- I can use a sourceID? Not an itemID or itemLink? Maybe sourceID ISN'T a "Source" like "Black Temple"
     if itemID then model:TryOn(itemLink) end
 
-    -- print(slotID,lastClicked,variant,setID,itemID)
+-- print(slotID,lastClicked,variant,setID,itemID)
 end
 
 function ASHH:HookScripts()
     ASHH:HookSetButtons()
     ASHH:HookModel()
     ASHH:HookVariants()
+    ASHH:HookKeyFunc()
 end
 
 function ASHH:HookSetButtons()
     --Hook to Set Buttons
+    -- TODO: switch this from button-specific to hook into the WardrobeSetsCollectionMixin functions
     local btn_h = "WardrobeCollectionFrameScrollFrameButton"
     local count = 1
     local btn = _G[btn_h..count]
@@ -354,7 +372,7 @@ function ASHH:HookSetButtons()
     while btn do
         btn:HookScript("OnClick", function(self, button)
             ASHH:EvalButtons()
-            ASHH.lastClickedSet = self.Name:GetText()
+            ASHH.lastClickedSet = self.Name:GetText() -- WardrobeSetsCollectionMixin:GetSelectedSetID(); -- do _NOT_ do this for each button. Hook it to one of the SelectSet functions for the mixin.
         end)
         -- Arrow keys are NOT handled by OnKeyUp, OnKeyDown, PostClick, PreClick
         --      OnAttributeChanged, OnMouseDown, OnMouseUp, or OnMouseWheel
@@ -397,6 +415,12 @@ function ASHH:HookVariants()
     end)
 end
 
+function ASHH:HookKeyFunc() {
+    hooksecurefunc(WardrobeSetsCollectionMixin,"HandleKey", function () 
+        ASHH:EvalButtons()
+    end)
+}
+
 function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
     ASHH:SetupOptions()
@@ -431,19 +455,31 @@ function ASHH:BuildSetsDB()
     sets = {}
 
     local baseSets = C_TransmogSets.GetBaseSets()
-
+--[[
     for i=1,#baseSets do
         set = baseSets[i]
-        -- if sets[set.name] ~= nil then continue end
-        sets[set.name] = {
-            name = set.name,
-            setID = set.setID,
-            variants = ASHH:FindVariants(set.setID)
-        }
+        if sets[set.name] == nil then 
+            sets[set.name] = {
+                name = set.name,
+                setID = set.setID,
+                variants = ASHH:FindVariants(set.setID)
+            }
+        end
     end    
+]]
+    for _,set in pairs(baseSets) do 
+        if sets[set.name] == nil then 
+            sets[set.name] = {
+                name = set.name,
+                setID = set.setID,
+                variants = ASHH:FindVariants(set.setID)
+            }
+        end
+    end
 
     ASHH.db.sets = sets
     -- ASHH.lastClickedSet = WardrobeCollectionFrameScrollFrameButton1.Name:GetText() -- Text isn't loaded until window shows? How to do a one-time script? Ace hook?
+    -- may be able to sort baseSets or pull the name off the "first" item of that
 end
 
 function ASHH:FindVariants(setID)
