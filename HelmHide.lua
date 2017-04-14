@@ -1,5 +1,4 @@
 local AddOn_Name, ns = ...
-local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 
 -- TODO: Pull variant table option into its own row?
 -- TODO: Clean up . : notation
@@ -7,7 +6,6 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- Keepsake: https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_Collections/Blizzard_Wardrobe.lua
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
-local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 local model, setsFrame
 
@@ -36,6 +34,7 @@ function ASHH:OnInitialize()
     ASHH:InitOps()
 
     self:RegisterChatCommand("ashh",function()
+        -- 2 calls to solve a bug where 1 call isn't opening it to the right frame
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
     end)
@@ -80,17 +79,16 @@ function ASHH:CreateButtons()
 end
 
 function ASHH:buildButton(attachTo,checkVal,tooltip,texturePath,hideFunc)
-    local btn = CreateFrame("CheckButton",nil,WardrobeCollectionFrame.SetsCollectionFrame.DetailsFrame,"UICheckButtonTemplate")
+    local btn = CreateFrame("CheckButton",nil,setsFrame.DetailsFrame,"UICheckButtonTemplate")
+    btn:SetChecked(checkVal)
+    btn.tooltip = tooltip
+    self:SetTexture(btn,texturePath)
 
     if not attachTo then 
         btn:SetPoint("topleft",7,-5)
     else 
         btn:SetPoint("TOPLEFT",attachTo,"TOPRIGHT",5,0)
     end
-
-    btn:SetChecked(checkVal)
-    btn.tooltip = tooltip
-    self:SetTexture(btn,texturePath)
 
     btn:SetScript("OnClick", function(self) 
         if self:GetChecked() then 
