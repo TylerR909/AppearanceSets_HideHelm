@@ -7,13 +7,12 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- TODO: Clean up ASHH v self
 -- TODO: Icons per armor class(cloth, leather, mail, plate)
 -- TODO: Clean up by putting options in its own file
--- TODO: Run this /run print(WardrobeSetsCollectionMixin:GetSelectedSetID()) -- huge implications 
 -- Keepsake: https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_Collections/Blizzard_Wardrobe.lua
 
 local ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
-local model
+local model, setsFrame
 
 local defaultOptions = {
     global = {
@@ -172,39 +171,36 @@ local optionsTable = {
 
 function ASHH:HideHelm()
     model:UndressSlot(1)
-    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(1)
 end
 
 function ASHH:HideShoulders()
     model:UndressSlot(3)
-    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(3)
 end
 
 function ASHH:HideBack()
     model:UndressSlot(15)
-    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(15)
 end
 
 function ASHH:HideBelt()
     model:UndressSlot(6)
-    --WardrobeCollectionFrame.SetsCollectionFrame.Model:UndressSlot(6)
 end
 
 function ASHH:EvalButtons()
-    if ASHH.buttons.hideHelm:GetChecked() then ASHH:HideHelm() end
-    if ASHH.buttons.hideShoulders:GetChecked() then ASHH:HideShoulders() end
-    if ASHH.buttons.hideBack:GetChecked() then ASHH:HideBack() end
-    if ASHH.buttons.hideBelt:GetChecked() then ASHH:HideBelt() end
+    if self.buttons.hideHelm:GetChecked() then self:HideHelm() end
+    if self.buttons.hideShoulders:GetChecked() then self:HideShoulders() end
+    if self.buttons.hideBack:GetChecked() then self:HideBack() end
+    if self.buttons.hideBelt:GetChecked() then self:HideBelt() end
+    -- NEVER Refresh here or we'll hit a recursive loop
 end
 
 function ASHH:CreateButtons()
     -- Build button, etc
-    ASHH.buttons = ASHH.buttons or {}
+    self.buttons = self.buttons or {}
 
-    ASHH.buttons.hideHelm = ASHH:buildButton_Helm()
-    ASHH.buttons.hideShoulders = ASHH:buildButton_Shoulders()
-    ASHH.buttons.hideBack = ASHH:buildButton_Back()
-    ASHH.buttons.hideBelt = ASHH:buildButton_Belt()
+    self.buttons.hideHelm = self:buildButton_Helm()
+    self.buttons.hideShoulders = self:buildButton_Shoulders()
+    self.buttons.hideBack = self:buildButton_Back()
+    self.buttons.hideBelt = self:buildButton_Belt()
 end
 
 function ASHH:buildButton_Helm() 
@@ -212,18 +208,18 @@ function ASHH:buildButton_Helm()
     hh:SetPoint("TOPLEFT",7,-5)
     hh:SetChecked(self.db.char.hideHelm)
     hh.tooltip = L["Hide Helm"]
-    ASHH:SetTexture(hh,"Interface\\Icons\\inv_helmet_03")
-    -- TODO: Click works, but Arrow Keys to select fails to trigger
-    hh:SetScript("OnClick", function(self,button,down) 
+    self:SetTexture(hh,"Interface\\Icons\\inv_helmet_03")
+
+    hh:SetScript("OnClick", function(self) 
         if self:GetChecked() then 
             ASHH:HideHelm()
         else
-            ASHH:ReEquip(1)
+            ASHH:Refresh()
         end
     end)
 
-    hh:SetScript("OnEnter", function() ASHH.SetTooltip(hh) end)
-    hh:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+    hh:SetScript("OnEnter", function() self.SetTooltip(hh) end)
+    hh:SetScript("OnLeave", function() self.DropTooltip() end)
 
     return hh
 end
@@ -233,18 +229,18 @@ function ASHH:buildButton_Shoulders()
     hs:SetPoint("TOPLEFT",ASHH.buttons.hideHelm,"TOPRIGHT",5,0)
     hs:SetChecked(self.db.char.hideShoulders)
     hs.tooltip = L["Hide Shoulders"]
-    ASHH:SetTexture(hs,"Interface\\Icons\\inv_misc_desecrated_clothshoulder")
+    self:SetTexture(hs,"Interface\\Icons\\inv_misc_desecrated_clothshoulder")
 
     hs:SetScript("OnClick", function(self)
         if self:GetChecked() then
             ASHH:HideShoulders()
         else
-            ASHH:ReEquip(3)
+            ASHH:Refresh()
         end
     end)
 
-    hs:SetScript("OnEnter", function() ASHH.SetTooltip(hs) end)
-    hs:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+    hs:SetScript("OnEnter", function() self.SetTooltip(hs) end)
+    hs:SetScript("OnLeave", function() self.DropTooltip() end)
 
     return hs 
 end
@@ -254,18 +250,18 @@ function ASHH:buildButton_Back()
     hb:SetPoint("TOPLEFT",ASHH.buttons.hideShoulders,"TOPRIGHT",5,0)
     hb:SetChecked(self.db.char.hideBack)
     hb.tooltip = L["Hide Back"]
-    ASHH:SetTexture(hb,"Interface\\Icons\\inv_misc_cape_20")
+    self:SetTexture(hb,"Interface\\Icons\\inv_misc_cape_20")
 
-    hb:SetScript("OnClick", function(self,button,down) 
+    hb:SetScript("OnClick", function(self)
         if self:GetChecked() then 
             ASHH:HideBack()
         else
-            ASHH:ReEquip(15)
+            ASHH:Refresh()
         end
     end)
 
-    hb:SetScript("OnEnter", function() ASHH.SetTooltip(hb) end)
-    hb:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+    hb:SetScript("OnEnter", function() self.SetTooltip(hb) end)
+    hb:SetScript("OnLeave", function() self.DropTooltip() end)
 
     return hb
 end
@@ -275,17 +271,17 @@ function ASHH:buildButton_Belt()
     hw:SetPoint("TOPLEFT",ASHH.buttons.hideBack,"TOPRIGHT",5,0)
     hw:SetChecked(self.db.char.hideBelt)
     hw.tooltip = L["Hide Belt"]
-    ASHH:SetTexture(hw,"Interface\\Icons\\inv_belt_03")
-    hw:SetScript("OnClick", function(self,button,down)
+    self:SetTexture(hw,"Interface\\Icons\\inv_belt_03")
+    hw:SetScript("OnClick", function(self)
         if self:GetChecked() then
             ASHH:HideBelt()
         else
-            ASHH:ReEquip(6)
+            ASHH:Refresh()
         end
     end)
 
-    hw:SetScript("OnEnter", function() ASHH.SetTooltip(hw) end)
-    hw:SetScript("OnLeave", function() ASHH.DropTooltip() end)
+    hw:SetScript("OnEnter", function() self.SetTooltip(hw) end)
+    hw:SetScript("OnLeave", function() self.DropTooltip() end)
 
     return hw
 end
@@ -311,119 +307,20 @@ function ASHH:SetTexture(button,path)
     texture:SetVertexColor(1,1,1,0.5)
 end
 
-function ASHH:ReEquip(slotID)
-    local lastClicked = ASHH.lastClickedSet
-    local variant
-    if WardrobeSetsCollectionVariantSetsButton:IsShown() then
-        variant = UIDropDownMenu_GetText(WardrobeSetsCollectionVariantSetsButton)
-    end
-
--- identify setID
-    local sets = ASHH.db.sets
-    local setID
-
-    if sets[lastClicked].variants == nil or sets[lastClicked].variants[variant] == nil then 
-        setID = sets[lastClicked].variants[variant].setID
-    else
-        setID = sets[lastClicked].setID
-    end
-
--- pull ItemID from setID
-    local itemID = C_TransmogSets.GetSourcesForSlot(setID,slotID)
-    --[[
-        test:
-            set setID with valid slotID
-                - multiple sources
-                - one source
-                - no sources (Bad slotID?)
-            setID with invalid slotID
-                - Match no-sources?
-    ]]
-    if #itemID > 0 then -- let's see if this fixes the below error
-        itemID = itemID[1].itemID -- Error Case: A set without a cape got to this part and indexed null.
-                                -- other sets w/ missing pieces might make it this far. How to handle "Slot not in set?"
-    else
-        itemID = setID -- This may not make sense; an entire setID can't become a one-item link
-    end -- look in to self:GetParent():GetParent():GetSelectedSetID()... wth is GetSelectedSetID()? 
-
--- I need to get more info for the right variant
-    local itemLink = select(2,GetItemInfo(itemID))
-
--- I can use a sourceID? Not an itemID or itemLink? Maybe sourceID ISN'T a "Source" like "Black Temple"
-    if itemID then model:TryOn(itemLink) end
-
--- print(slotID,lastClicked,variant,setID,itemID)
+function ASHH:Refresh()
+    setsFrame:SelectSet(setsFrame:GetSelectedSetID())
+    -- TODO: Re-equipping an item is a bit jittery (Shoulder particle effects will reset and it's jarring). Fix this.
 end
 
-function ASHH:HookScripts()
-    ASHH:HookSetButtons()
-    ASHH:HookModel()
-    ASHH:HookVariants()
-    ASHH:HookKeyFunc()
-end
-
-function ASHH:HookSetButtons()
-    --Hook to Set Buttons
-    -- TODO: switch this from button-specific to hook into the WardrobeSetsCollectionMixin functions
-    local btn_h = "WardrobeCollectionFrameScrollFrameButton"
-    local count = 1
-    local btn = _G[btn_h..count]
-
-    while btn do
-        btn:HookScript("OnClick", function(self, button)
-            ASHH:EvalButtons()
-            ASHH.lastClickedSet = self.Name:GetText() -- WardrobeSetsCollectionMixin:GetSelectedSetID(); -- do _NOT_ do this for each button. Hook it to one of the SelectSet functions for the mixin.
-        end)
-        -- Arrow keys are NOT handled by OnKeyUp, OnKeyDown, PostClick, PreClick
-        --      OnAttributeChanged, OnMouseDown, OnMouseUp, or OnMouseWheel
-        
-        count = count + 1
-        btn = _G[btn_h..count]
-    end
-
-end
-
-function ASHH:HookModel()
-    -- Hook to Model Frame
-    -- When model is shown (Window open, tab opened, etc) evaluate buttons (after a buffer period) 
-    WardrobeCollectionFrame.SetsCollectionFrame.Model:HookScript("OnShow",function(self)
-        local elap = 0
-
-        ASHH.buttons.hideHelm:SetScript("OnUpdate",function (self, elapsed)
-            elap = elap + elapsed
-            if elap > OnUpdate_Buffer then
-                ASHH:EvalButtons()
-                self:SetScript("OnUpdate",nil)
-            end
-        end)
-    end)
-
-end
-
-function ASHH:HookVariants() 
-    -- WardrobeCollectionFrame.SetsCollectionFrame.Model:HookScript("OnUpdateModel")
-    if not ASHH.buffers then ASHH.buffers = {} end
-    ASHH.buffers.Model = 0
-
-    -- Future: If I hide the Variant button to generate my own, this will break
-    WardrobeSetsCollectionVariantSetsButton:HookScript("OnUpdate",function(dropdown,elapsed)
-        ASHH.buffers.Model = ASHH.buffers.Model + elapsed
-        if (ASHH.buffers.Model > OnUpdate_Buffer) then
-            ASHH:EvalButtons()
-            ASHH.buffers.Model = 0
-        end
-    end)
-end
-
-function ASHH:HookKeyFunc() {
-    hooksecurefunc(WardrobeSetsCollectionMixin,"HandleKey", function () 
+function ASHH:HookRefresh()
+    hooksecurefunc(setsFrame,"Refresh",function()
         ASHH:EvalButtons()
     end)
-}
+end
 
 function ASHH:OnInitialize()
     self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
-    ASHH:SetupOptions()
+    self:SetupOptions()
     LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,nil)
     self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,friendlyName,nil)
 
@@ -438,67 +335,21 @@ function ASHH:OnInitialize()
         ASHH:CollectionsInit()
     end
 
-    ASHH:RegisterChatCommand("ashh",function()
+    self:RegisterChatCommand("ashh",function()
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
         InterfaceOptionsFrame_OpenToCategory(self.optionsFrame);
     end)
 end
 
 function ASHH:CollectionsInit()
-    model = WardrobeCollectionFrame.SetsCollectionFrame.Model
-    ASHH:CreateButtons()
-    ASHH:HookScripts()
-    ASHH:BuildSetsDB()
+    setsFrame = WardrobeCollectionFrame.SetsCollectionFrame
+    model = setsFrame.Model
+    self:CreateButtons()
+    self:HookRefresh()
 end
 
-function ASHH:BuildSetsDB()
-    sets = {}
-
-    local baseSets = C_TransmogSets.GetBaseSets()
---[[
-    for i=1,#baseSets do
-        set = baseSets[i]
-        if sets[set.name] == nil then 
-            sets[set.name] = {
-                name = set.name,
-                setID = set.setID,
-                variants = ASHH:FindVariants(set.setID)
-            }
-        end
-    end    
-]]
-    for _,set in pairs(baseSets) do 
-        if sets[set.name] == nil then 
-            sets[set.name] = {
-                name = set.name,
-                setID = set.setID,
-                variants = ASHH:FindVariants(set.setID)
-            }
-        end
-    end
-
-    ASHH.db.sets = sets
-    -- ASHH.lastClickedSet = WardrobeCollectionFrameScrollFrameButton1.Name:GetText() -- Text isn't loaded until window shows? How to do a one-time script? Ace hook?
-    -- may be able to sort baseSets or pull the name off the "first" item of that
-end
-
-function ASHH:FindVariants(setID)
-    vtable = C_TransmogSets.GetVariantSets(setID)
-    if not vtable then return nil end
-    
-    variants = {}
-    for i=1,#vtable do
-        variants[vtable[i].description] = vtable[i].setID
-    end
-
-    return variants
-end
-
-function ASHH:OnEnable()
-end
-
-function ASHH:OnDisable()
-end
+function ASHH:OnEnable() end
+function ASHH:OnDisable() end
 
 function ASHH:SetupOptions()
     -- if usecharsettings false, then use global settings
@@ -515,7 +366,6 @@ function ASHH:ResetOptions()
 end
 
 function ASHH:ResetCharOptions()
-    -- self may be wrong. Could switch to ASHH.*
     self.db.char.hideHelm = self.db.global.hideHelm 
     self.db.char.hideShoulders = self.db.global.hideShoulders
     self.db.char.hideBack = self.db.global.hideBack
