@@ -8,3 +8,4 @@ embeds.xml
 Locale\Locales.xml
 
 HelmHide.lua
+HelmHideOptions.lua

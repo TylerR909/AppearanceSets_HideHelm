@@ -1,5 +1,4 @@
 local AddOn_Name, ns = ...
-local OnUpdate_Buffer = 0.05
 local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 
 -- TODO: Pull variant table option into its own row?
@@ -9,12 +8,12 @@ local friendlyName = GetAddOnMetadata(AddOn_Name,"Title")
 -- TODO: Clean up by putting options in its own file
 -- Keepsake: https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_Collections/Blizzard_Wardrobe.lua
 
-local ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
+ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 local model, setsFrame
 
-local defaultOptions = {
+local defaultOptions_off = {
     global = {
         hideHelm = true,
         hideShoulders = false,
@@ -27,7 +26,7 @@ local defaultOptions = {
     }
 }
 
-local optionsTable = {
+local optionsTable_off = {
     name = friendlyName,
     handler = ASHH,
     type = 'group',
@@ -319,10 +318,11 @@ function ASHH:HookRefresh()
 end
 
 function ASHH:OnInitialize()
-    self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
-    self:SetupOptions()
-    LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,nil)
-    self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,friendlyName,nil)
+    ASHH:InitOps()
+    --self.db = LibStub("AceDB-3.0"):New("ASHHDB",defaultOptions,true)
+    --self:SetupOptions()
+    --LibStub("AceConfig-3.0"):RegisterOptionsTable(AddOn_Name,optionsTable,nil)
+    --self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(AddOn_Name,friendlyName,nil)
 
     if not IsAddOnLoaded("Blizzard_Collections") then 
         self:RegisterEvent("ADDON_LOADED", function (self, addon, ...)
@@ -351,7 +351,7 @@ end
 function ASHH:OnEnable() end
 function ASHH:OnDisable() end
 
-function ASHH:SetupOptions()
+function ASHH:SetupOptions_off()
     -- if usecharsettings false, then use global settings
     if self.db.char.useCharSettings ~= true then 
         self.db.char.hideHelm = self.db.global.hideHelm
@@ -361,11 +361,11 @@ function ASHH:SetupOptions()
     end
 end
 
-function ASHH:ResetOptions() 
+function ASHH:ResetOptions_off() 
     self.db:ResetDB(defaultOptions)
 end
 
-function ASHH:ResetCharOptions()
+function ASHH:ResetCharOptions_off()
     self.db.char.hideHelm = self.db.global.hideHelm 
     self.db.char.hideShoulders = self.db.global.hideShoulders
     self.db.char.hideBack = self.db.global.hideBack
