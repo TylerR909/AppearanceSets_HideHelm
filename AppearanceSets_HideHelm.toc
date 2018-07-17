@@ -1,6 +1,6 @@
-## Interface: 70300
+## Interface: 80000
 ## Title: Appearance Sets Helm Hider
-## Version: 1.1.0
+## Version: @project-version@
 ## SavedVariables: ASHHDB
 
 
