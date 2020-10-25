@@ -64,7 +64,7 @@ local optionsTable = {
 function ASHH:GenerateOptionsTable()
     for slotKey, slotId, slotName in ASHH:WalkHideable() do
         optionsTable.args[slotName.."Default_G"] = {
-            name = "Hide "..slotName,
+            name = L["Hide"].." "..slotName,
             type = "toggle",
             order = 3,
             set = function(_,val)
@@ -77,7 +77,7 @@ function ASHH:GenerateOptionsTable()
             get = function() return ASHH.db.global[slotId] end
         }
         optionsTable.args[slotName.."Default_C"] = {
-            name = "Hide "..slotName,
+            name = L["Hide"].." "..slotName,
             type = "toggle",
             order = 8,
             set = function(_,val)
@@ -87,7 +87,7 @@ function ASHH:GenerateOptionsTable()
             get = function() return ASHH.db.char[slotId] end
         }
         optionsTable.args[slotName.."RemoveOption"] = {
-            name = "Remove "..slotName,
+            name = L["Remove"].." "..slotName,
             type = "toggle",
             order = 13,
             set = function(_,val)

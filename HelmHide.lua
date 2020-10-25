@@ -1,14 +1,12 @@
 local AddOn_Name, ns = ...
 
--- TODO: Pull variant table option into its own row?
--- TODO: Clean up . : notation
--- TODO: Icons per armor class(cloth, leather, mail, plate)
 -- Keepsake: https://github.com/tomrus88/BlizzardInterfaceCode/blob/master/Interface/AddOns/Blizzard_Collections/Blizzard_Wardrobe.lua
 
 ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 local model, setsFrame
 
+-- https://wow.tools/files and https://wow.gamepedia.com/InventorySlotName
 ASHH.hideable = {
     { name = "HEADSLOT", texture = "Interface\\Icons\\inv_helmet_03"},
     { name = "SHOULDERSLOT", texture = "Interface\\Icons\\inv_misc_desecrated_clothshoulder"},
@@ -109,7 +107,7 @@ end
 function ASHH:buildButton(attachTo,checkVal,slotName,texturePath,hideFunc)
     local btn = CreateFrame("CheckButton","ASHHCheckButton_"..slotName,setsFrame.DetailsFrame,"UICheckButtonTemplate")
     btn:SetChecked(checkVal)
-    btn.tooltip = "Hide "..slotName
+    btn.tooltip = L["Hide"].." "..slotName
     btn.hideFunc = hideFunc
     self.SetTexture(btn,texturePath)
 

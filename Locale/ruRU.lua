@@ -4,13 +4,11 @@ local L = LibStub("AceLocale-3.0"):NewLocale("AppearanceSets_HideHelm", "ruRU", 
 
 if not L then return end
 
-L["Hide Helm"] = "Скрыть шлем"
-L["Hide Shoulders"] = "Скрыть плечи"
-L["Hide Back"] = "Скрыть плащ"
-L["Hide Belt"] = "Скрыть пояс"
-L["Global Defaults"] = "Глобальные настройки по умолчанию"
 L["Character Defaults"] = "Для персонажа по умолчанию"
-L["Use Global"] = "Использовать глобальные"
-L["Expand Variants"] = "Расширенные варианты"
-L["Coming soon!"] = "Скоро!"
+L["Global Defaults"] = "Глобальные настройки по умолчанию"
+-- L["Hide"] = false
+-- L["Remove"] = false
+-- L["Remove Options"] = false
+-- L["RemoveOptionsMsg"] = "Removes the option from the UI altogether"
 L["ReloadMsg"] = "Изменения вступят в силу на следующей перезагрузки"
+L["Use Global"] = "Использовать глобальные"
