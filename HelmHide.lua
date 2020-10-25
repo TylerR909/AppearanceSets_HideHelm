@@ -92,15 +92,17 @@ function ASHH:CreateButtons()
 
     local previousButton = nil;
     for slotKey, slotId, slotName, texture in ASHH:WalkHideable() do
-        previousButton = self:buildButton(
-            previousButton,
-            self.db.char[slotId],
-            slotName,
-            texture,
-            function() model:UndressSlot(slotId) end
-        )
+        if ASHH.db.global["Remove"..slotName] ~= true then 
+            previousButton = self:buildButton(
+                previousButton,
+                self.db.char[slotId],
+                slotName,
+                texture,
+                function() model:UndressSlot(slotId) end
+            )
 
-        self.buttons[slotId] = previousButton;
+            self.buttons[slotId] = previousButton;
+        end
     end
 end
 
@@ -150,6 +152,14 @@ function ASHH.SetTexture(button,path)
     texture = button:GetPushedTexture()
     texture:SetTexture(path)
     texture:SetVertexColor(1,1,1,0.5)
+end
+
+function ASHH:DropButtons()
+    for _,btn in pairs(self.buttons) do
+        btn:SetParent(nil)
+        btn:Hide()
+    end
+    self.buttons = {}
 end
 
 function ASHH.SetTooltip(btn)

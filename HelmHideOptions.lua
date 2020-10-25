@@ -47,8 +47,17 @@ local optionsTable = {
             order = 11,
             disabled = function() return not ASHH.db.char.useCharSettings end,
             func = "ResetCharOptions" -- Hope this works!
-        }
-            -- TODO: Way in the future, just add this as a setting to the dressing room to remove any helms tried on "anywhere"
+        },
+        removeOptionsHeader = {
+            name = L["Remove Options"],
+            type = "header",
+            order = 12,
+        },
+        removeOptionsMessage = {
+            type = "description",
+            name = L["RemoveOptionsMsg"],
+            order = 12
+        },
     }
 }
 
@@ -76,6 +85,17 @@ function ASHH:GenerateOptionsTable()
                     ASHH.db.char.useCharSettings = true
                 end,
             get = function() return ASHH.db.char[slotId] end
+        }
+        optionsTable.args[slotName.."RemoveOption"] = {
+            name = "Remove "..slotName,
+            type = "toggle",
+            order = 13,
+            set = function(_,val)
+                    ASHH.db.global["Remove"..slotName] = val
+                    ASHH:DropButtons()
+                    ASHH:CreateButtons()
+                end,
+            get = function() return ASHH.db.global["Remove"..slotName] end
         }
     end
 
