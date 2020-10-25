@@ -9,20 +9,39 @@ ASHH = LibStub("AceAddon-3.0"):NewAddon(AddOn_Name,"AceEvent-3.0","AceConsole-3.
 local L = LibStub("AceLocale-3.0"):GetLocale(AddOn_Name,true)
 local model, setsFrame
 
----------------------------------------------------------------
------------------ The Stars of This Show ----------------------
----------------------------------------------------------------
+ASHH.hideable = {
+    { name = "HEADSLOT", texture = "Interface\\Icons\\inv_helmet_03"},
+    { name = "SHOULDERSLOT", texture = "Interface\\Icons\\inv_misc_desecrated_clothshoulder"},
+    { name = "CHESTSLOT", texture = 132631},
+    { name = "WAISTSLOT", texture = "Interface\\Icons\\inv_belt_03"},
+    { name = "FEETSLOT", texture = 132539 },
+    { name = "WRISTSLOT", texture = 132606 },
+    { name = "HANDSSLOT", texture = 132955 },
+    { name = "BACKSLOT", texture = "Interface\\Icons\\inv_misc_cape_20"},
+}
 
-function ASHH.HideHelm() model:UndressSlot(1) end
-function ASHH.HideShoulders() model:UndressSlot(3) end
-function ASHH.HideBack() model:UndressSlot(15) end
-function ASHH.HideBelt() model:UndressSlot(6) end
+function ASHH:WalkHideable()
+    local index = 1
+    local function iter(table)
+        local v = table[index]
+        if not v then return end
+
+        local slotKey = v.name or v
+        local slotId, defaultTexture = GetInventorySlotInfo(slotKey)
+        local slotName = _G[slotKey]
+        local texture = v.texture or defaultTexture
+
+        index = index + 1
+
+        return slotKey, slotId, slotName, texture
+    end
+    return iter,self.hideable
+end
 
 function ASHH:EvalButtons()
-    if self.buttons.hideHelm:GetChecked() then self:HideHelm() end
-    if self.buttons.hideShoulders:GetChecked() then self:HideShoulders() end
-    if self.buttons.hideBack:GetChecked() then self:HideBack() end
-    if self.buttons.hideBelt:GetChecked() then self:HideBelt() end
+    for _,v in pairs(self.buttons) do
+        if v:GetChecked() then v.hideFunc() end
+    end
     -- NEVER Refresh here or we'll hit a recursive loop
 end
 
@@ -69,20 +88,28 @@ end
 ---------------------------------------------------------------
 
 function ASHH:CreateButtons()
-    -- Build button, etc
     self.buttons = self.buttons or {}
 
-    self.buttons.hideHelm = self:buildButton(nil,self.db.char.hideHelm,L["Hide Helm"],"Interface\\Icons\\inv_helmet_03",ASHH.HideHelm)
-    self.buttons.hideShoulders = self:buildButton(self.buttons.hideHelm,self.db.char.hideShoulders,L["Hide Shoulders"],"Interface\\Icons\\inv_misc_desecrated_clothshoulder",ASHH.HideShoulders)
-    self.buttons.hideBack = self:buildButton(self.buttons.hideShoulders,self.db.char.hideBack,L["Hide Back"],"Interface\\Icons\\inv_misc_cape_20",ASHH.HideBack)
-    self.buttons.hideBelt = self:buildButton(self.buttons.hideBack,self.db.char.hideBelt,L["Hide Belt"],"Interface\\Icons\\inv_belt_03",ASHH.HideBelt)
+    local previousButton = nil;
+    for slotKey, slotId, slotName, texture in ASHH:WalkHideable() do
+        previousButton = self:buildButton(
+            previousButton,
+            self.db.char[slotId],
+            slotName,
+            texture,
+            function() model:UndressSlot(slotId) end
+        )
+
+        self.buttons[slotId] = previousButton;
+    end
 end
 
-function ASHH:buildButton(attachTo,checkVal,tooltip,texturePath,hideFunc)
-    local btn = CreateFrame("CheckButton",nil,setsFrame.DetailsFrame,"UICheckButtonTemplate")
+function ASHH:buildButton(attachTo,checkVal,slotName,texturePath,hideFunc)
+    local btn = CreateFrame("CheckButton","ASHHCheckButton_"..slotName,setsFrame.DetailsFrame,"UICheckButtonTemplate")
     btn:SetChecked(checkVal)
-    btn.tooltip = tooltip
-    self:SetTexture(btn,texturePath)
+    btn.tooltip = "Hide "..slotName
+    btn.hideFunc = hideFunc
+    self.SetTexture(btn,texturePath)
 
     if not attachTo then 
         btn:SetPoint("topleft",7,-5)
@@ -92,9 +119,9 @@ function ASHH:buildButton(attachTo,checkVal,tooltip,texturePath,hideFunc)
 
     btn:SetScript("OnClick", function(self) 
         if self:GetChecked() then 
-            hideFunc()
+            self.hideFunc()
         else
-            ASHH:Refresh()
+            ASHH.Refresh()
         end
     end)
 
@@ -104,7 +131,7 @@ function ASHH:buildButton(attachTo,checkVal,tooltip,texturePath,hideFunc)
     return btn
 end
 
-function ASHH:SetTexture(button,path)
+function ASHH.SetTexture(button,path)
     button:SetHeight(28)
     button:SetWidth(28)
 
@@ -139,7 +166,7 @@ end
 ---------------- Couple Extra Lib Functions -------------------
 ---------------------------------------------------------------
 
-function ASHH:Refresh()
+function ASHH.Refresh()
     setsFrame:Refresh()
     -- setsFrame:SelectSet(setsFrame:GetSelectedSetID())
     -- TODO: Re-equipping an item is a bit jittery (Shoulder particle effects will reset and it's jarring). Fix this.
